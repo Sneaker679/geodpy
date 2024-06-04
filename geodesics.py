@@ -1,37 +1,99 @@
+from typing import Callable
 from sympy import *
+from scipy.integrate import solve_ivp
+from scipy.integrate._ivp.ivp import OdeResult
+import numpy as np
 
-# Geodesic covariant equation : ∂ₛuⱼ = 1/2 * ∂ⱼ(gₘₖ) * uᵐ uᵏ where uᵏ = ∂ₛxᵏ 
-def covariant_acc(s : Symbol, gₘₖ: Matrix, coordinates: list[Function]) -> Array:
-    assert gₘₖ.shape[0] == len(coordinates)
-    dₛuⱼ: list[Function] = []
-    uᵐ  : Array = Array(coordinates).diff(s)
-    uᵐuᵏ: Array = tensorproduct(uᵐ,uᵐ)
+class Geodesics:
 
-    for j, coord in enumerate(coordinates):
-        dₛuⱼ.append(1/2 * tensorcontraction(tensorproduct(gₘₖ.diff(coord), uᵐuᵏ), (0,1,2,3)))
-    
-    dₛuⱼ= Array(dₛuⱼ)
-    return simplify(dₛuⱼ)
+    def __init__(self, s : Symbol, gₘₖ: Matrix, coordinates: list[Function], speed_expr : Function = None):
+        assert gₘₖ.shape[0] == len(coordinates)
+        assert s not in coordinates
+        
+        self._s = s
+        self._gₘₖ= gₘₖ
+        self._coordinates = coordinates
+        self._dₛuᵏ= self.__contravariant_acc()
+        self._dₛuᵏ_lambda = self.vector_to_lambda(s, self._dₛuᵏ, coordinates)
 
-# Geodesic contravariant equation : ∂ₛuᵏ = ∂ₛ(gᵐᵏuₘ) = g where uᵏ = ∂ₛxᵏ
-def contravariant_acc(s : Symbol, gₘₖ: Matrix, coordinates: list[Function]) -> Array:
-    assert gₘₖ.shape[0] == len(coordinates)
-    dₛuₘ_: Array  = covariant_acc(s, gₘₖ, coordinates)
-    gᵐᵏ_ : Matrix = gₘₖ.inv()
-    uʲ   : Array  = Array(coordinates).diff(s)
-    
-    gₘⱼuʲ= tensorcontraction(tensorproduct( gₘₖ.diff(s), uʲ            ), (1,2))
-    dₛuᵏ = tensorcontraction(tensorproduct( gᵐᵏ_       , dₛuₘ_ - gₘⱼuʲ ), (1,2))
-    
-    return simplify(dₛuᵏ)
+        self._ode_result : OdeResult = None
 
-# Converts contravariant or covariant accelerations tensor arrays into lambda expressions, for later integration
-def to_lambda(s : Symbol, expressions : Array, coordinates : list[Function]):
-    assert expressions.shape[0] == len(coordinates)
-    dₛcoordinates : list[Function] = [coord.diff(s) for coord in coordinates]
-    coordinates.extend(dₛcoordinates)
+    def calculate_velocities(self, velocity_equation : Function) -> np.array:
+        assert self._ode_result is not None
+        velocity2_equation = velocity_equation ** 2 # Necessary because lambda function doesn't like taking the sqrt of an expression.
+        symbolic_args = self._coordinates.copy()[1:4]
+        symbolic_args.extend([coord.diff(self._s) for coord in symbolic_args])
+        velocity2_equation_lambda = lambdify(symbolic_args, velocity2_equation, "scipy")
 
-    lambda_functions : list[Function] = []
-    for k, expr in enumerate(expressions):
-        lambda_functions.append(lambdify(coordinates, expr, "scipy"))
-    return lambda_functions
+        t = self._ode_result.t
+
+        args = list(self._ode_result.y[1:4])
+        derivatives = []
+        for coord in args:
+            derivatives.append(np.gradient(coord,t))
+
+        args.extend(derivatives)
+        velocities = velocity2_equation_lambda(*args)**(1/2)
+        velocities[-1] = velocities[-2]
+        return velocities
+
+    # Geodesic covariant equation : ∂ₛuⱼ = 1/2 * ∂ⱼ(gₘₖ) * uᵐ uᵏ where uᵏ = ∂ₛxᵏ 
+    def __covariant_acc(self) -> Array:
+        dₛuⱼ: list[Function] = []
+        uᵐ  : Array = Array(self._coordinates).diff(self._s)
+        uᵐuᵏ: Array = tensorproduct(uᵐ,uᵐ)
+
+        for j, coord in enumerate(self._coordinates):
+            dₛuⱼ.append(1/2 * tensorcontraction(tensorproduct(self._gₘₖ.diff(coord), uᵐuᵏ), (0,1,2,3)))
+        
+        dₛuⱼ= Array(dₛuⱼ)
+        return simplify(dₛuⱼ)
+
+    # Geodesic contravariant equation : ∂ₛuᵏ = ∂ₛ(gᵐᵏuₘ) = g where uᵏ = ∂ₛxᵏ
+    def __contravariant_acc(self) -> Array:
+        dₛuₘ_: Array  = self.__covariant_acc()
+        gᵐᵏ_ : Matrix = self._gₘₖ.inv()
+        uʲ   : Array  = Array(self._coordinates).diff(self._s)
+        
+        gₘⱼuʲ= tensorcontraction(tensorproduct( self._gₘₖ.diff(self._s), uʲ            ), (1,2))
+        dₛuᵏ = tensorcontraction(tensorproduct( gᵐᵏ_                   , dₛuₘ_ - gₘⱼuʲ ), (1,2))
+        
+        return simplify(dₛuᵏ)
+
+    # Converts tensor arrays into lambda expressions, for later integration. Array must only depend on coordinates and their first derivative.
+    @staticmethod
+    def vector_to_lambda(s: Symbol, expressions: Array, coordinates: list[Function]) -> list[Callable]:
+        assert expressions.shape[0] == len(coordinates)
+        lambda_functions : list[Function] = []
+        for k, expr in enumerate(expressions):
+            lambda_functions.append(Geodesics.expr_to_lambda(s, expr, coordinates))
+        return lambda_functions
+
+    @staticmethod
+    def expr_to_lambda(s: Symbol, expression: Function, coordinates: list[Function]) -> Callable:
+        args = coordinates.copy()
+        args.extend([coord.diff(s) for coord in coordinates])
+        return lambdify(args, expression, "scipy")
+
+    # Integration methods
+    def __diff_equations_system(self, dτ, state, equations : list) -> tuple:
+        assert len(equations) == 4
+        x0, x1, x2, x3, v0, v1, v2, v3  = state
+
+        a0 = equations[0](x0, x1, x2, x3, v0, v1, v2, v3)
+        a1 = equations[1](x0, x1, x2, x3, v0, v1, v2, v3)
+        a2 = equations[2](x0, x1, x2, x3, v0, v1, v2, v3)
+        a3 = equations[3](x0, x1, x2, x3, v0, v1, v2, v3)
+        
+        return v0, v1, v2, v3, a0, a1, a2, a3
+
+    def integrate(self, initial_values: list, time_interval : tuple[float,float], max_time_step : float) -> None:
+        assert len(initial_values) == 8
+        self._ode_result = solve_ivp(
+            fun = self.__diff_equations_system,
+            t_span = time_interval,
+            max_step = max_time_step,
+            y0 = initial_values,
+            args=(self._dₛuᵏ_lambda ,)
+        )
+        return self._ode_result
