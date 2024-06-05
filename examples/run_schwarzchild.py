@@ -1,5 +1,8 @@
 from sympy import *
 from geodesics import *
+from utilities.coord_transformation import spherical_to_cartesian
+import matplotlib.animation as animation
+import numpy as np
 
 # Possible symbols
 #t,r,a,b,c,θ,φ,η,ψ,x,y 
@@ -8,24 +11,21 @@ from geodesics import *
 
 print_output = True
 orbit_pdf_name = "outputs/o_schwarzschild.pdf"
+orbit_mp4_name = "outputs/o_schwarzschild.mp4"
 velocity_pdf_name = "outputs/v_schwarzschild.pdf"
 plot_velocity = False
 plot_orbit = True
-
-# Initial values
-import numpy as np
-rs = 1
-ro = 4 * rs
-k = (1-rs/ro)/np.sqrt(1-3*rs/(2*ro)) # circular orbit
-h = np.sqrt((rs/ro + (k*k - 1))*ro*ro/(1 - rs/ro)) # circular orbit
-initial_values = [0, ro, pi/2, 0, k/(1-rs/ro), 0, 0, h/(ro**2)]
-
-# Integration config
-time_interval = (0,1000)
-max_time_step = 0.1
+animate = True
 
 # Interval config
 s = symbols('s')
+
+# Initial values
+rs = 1
+ro = 5 * rs
+k = (1-rs/ro)/np.sqrt(1-3*rs/(2*ro))
+h = np.sqrt((rs/ro + (k*k - 1))*ro*ro/(1 - rs/ro)) - 0.5
+initial_values = [0, ro, np.pi/2, 0, k/(1-rs/ro), 0, 0, h/(ro**2)]
 
 # Metric config
 t = Function('t')(s)
@@ -41,15 +41,22 @@ gₘₖ = Matrix([
     [0          ,0          ,0          ,-r**2 * sin(θ)**2]
 ])
 
+# Integration config
+time_interval = (0,1000)
+max_time_step = 1
+
 
 if __name__ == "__main__":
+    print(f"k={k}\nh={h}")
 
     # Calculating geodesics
+    print("Calculating geodesics")
     geodesics_obj : list = Geodesics(s, gₘₖ, coordinates)
     geodesics_symbolic = geodesics_obj._dₛuᵏ
     geodesics_lambda = geodesics_obj._dₛuᵏ_lambda
 
     # Integration of ODE system
+    print("Integrating")
     ode_result = geodesics_obj.integrate(initial_values = initial_values, time_interval = time_interval, max_time_step = max_time_step)
 
     # Velocity calculation
@@ -66,7 +73,7 @@ if __name__ == "__main__":
         print("Integration result: ")
         print(ode_result)
 
-        from validationTests.val_schwarzschild import *
+        from validationTests.schwarzschild import *
         print(f"Energy conserved: {check_k(ode_result.y[1], ode_result.y[4], rs=rs)}")
         print(f"Angular momentum conserved: {check_h(ode_result.y[1], ode_result.y[7], rs=rs)}")
 
@@ -82,21 +89,43 @@ if __name__ == "__main__":
         ax.set_ylabel("Velocity")
         ax.set_xlabel("Time")
         plt.plot(ode_result.y[0],velocities)
-        fig.savefig(velocities_pdf_name)
+        #fig.savefig(velocity_pdf_name)
         plt.show()
         plt.close()
 
     if plot_orbit is True:
         # Plotting orbit
-        # Getting 
         fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
-        
+
         plt.title("Orbit of a star around a blackhole")
-        ax.add_patch(patches.Circle((0,0), 1, transform=ax.transData._b, edgecolor="k", fill=True, facecolor='k')) # blackhole
-        ax.plot(ode_result.y[3],ode_result.y[1])
+        ax.add_patch(patches.Circle((0,0), rs, transform=ax.transData._b, edgecolor="k", fill=True, facecolor='k')) # blackhole
+        ax.plot(ode_result.y[3], ode_result.y[1])
 
         max_radial_distance = np.max(ode_result.y[1])
-        ax.set_ylim(0,max_radial_distance*6/5)
+        ax.set_ylim(0, max_radial_distance*6/5)
 
-        fig.savefig(orbit_pdf_name)
+        #fig.savefig(orbit_pdf_name)
+        plt.show()
+
+    if animate is True:
+        fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
+        max_radial_distance = np.max(ode_result.y[1])
+        ax.add_patch(patches.Circle((0,0), rs, transform=ax.transData._b, edgecolor="k", fill=True, facecolor='k')) # blackhole
+        line = ax.plot(ode_result.y[3], ode_result.y[1])[0]
+        ax.set_ylim(0, max_radial_distance*6/5)
+
+        def update(frame):
+            try:
+                plt.title(f"r = {ode_result.y[1][frame]}, t = {int(ode_result.y[0][frame])}, s = {int(ode_result.t[frame])}")
+            except:
+                pass
+            r = ode_result.y[1][:frame]
+            phi = ode_result.y[3][:frame]
+            # update the line plot:
+            line.set_xdata(phi)
+            line.set_ydata(r)
+            return line
+
+        ani = animation.FuncAnimation(fig=fig, func=update, save_count=ode_result.y.shape[1], interval = 20)
+        #ani.save(orbit_mp4_name)
         plt.show()

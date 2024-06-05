@@ -6,7 +6,7 @@ import numpy as np
 
 class Geodesics:
 
-    def __init__(self, s : Symbol, gₘₖ: Matrix, coordinates: list[Function], speed_expr : Function = None):
+    def __init__(self, s : Symbol, gₘₖ: Matrix, coordinates: list[Function]):
         assert gₘₖ.shape[0] == len(coordinates)
         assert s not in coordinates
         
@@ -47,18 +47,18 @@ class Geodesics:
             dₛuⱼ.append(1/2 * tensorcontraction(tensorproduct(self._gₘₖ.diff(coord), uᵐuᵏ), (0,1,2,3)))
         
         dₛuⱼ= Array(dₛuⱼ)
-        return simplify(dₛuⱼ)
+        return dₛuⱼ
 
-    # Geodesic contravariant equation : ∂ₛuᵏ = ∂ₛ(gᵐᵏuₘ) = g where uᵏ = ∂ₛxᵏ
+    # Geodesic contravariant equation : ∂ₛuᵏ = gᵐᵏ(∂ₛuₘ - ∂ₛgₘⱼuʲ) where uᵏ = ∂ₛxᵏ
     def __contravariant_acc(self) -> Array:
         dₛuₘ_: Array  = self.__covariant_acc()
         gᵐᵏ_ : Matrix = self._gₘₖ.inv()
         uʲ   : Array  = Array(self._coordinates).diff(self._s)
         
-        gₘⱼuʲ= tensorcontraction(tensorproduct( self._gₘₖ.diff(self._s), uʲ            ), (1,2))
-        dₛuᵏ = tensorcontraction(tensorproduct( gᵐᵏ_                   , dₛuₘ_ - gₘⱼuʲ ), (1,2))
+        dₛgₘⱼuʲ= tensorcontraction(tensorproduct( self._gₘₖ.diff(self._s), uʲ              ), (1,2))
+        dₛuᵏ   = tensorcontraction(tensorproduct( gᵐᵏ_                   , dₛuₘ_ - dₛgₘⱼuʲ ), (1,2))
         
-        return simplify(dₛuᵏ)
+        return dₛuᵏ
 
     # Converts tensor arrays into lambda expressions, for later integration. Array must only depend on coordinates and their first derivative.
     @staticmethod
@@ -94,6 +94,9 @@ class Geodesics:
             t_span = time_interval,
             max_step = max_time_step,
             y0 = initial_values,
+            method = "Radau",
+            atol = 1e-4,
+            rtol = 1e-4,
             args=(self._dₛuᵏ_lambda ,)
         )
         return self._ode_result
