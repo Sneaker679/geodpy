@@ -1,5 +1,12 @@
+from geodesics import Geodesics
+from integration import integrate_diff_eqs, DiffEquationsSolution
+
+from utilities.coord_transformation import spherical_to_cartesian
+from utilities.velocities import calculate_velocities
+
 from sympy import *
-from geodesics import *
+import matplotlib.animation as animation
+import numpy as np
 
 # Possible symbols
 #t,r,a,b,c,θ,φ,η,ψ,x,y 
@@ -8,9 +15,14 @@ from geodesics import *
 
 print_output = True
 orbit_pdf_name = "outputs/o_.pdf"
+orbit_mp4_name = "outputs/o_.mp4"
 velocity_pdf_name = "outputs/v_.pdf"
 plot_velocity = False
 plot_orbit = True
+
+
+# Interval config
+s = symbols('s')
 
 # Initial values
 initial_values = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -18,9 +30,6 @@ initial_values = [0, 0, 0, 0, 0, 0, 0, 0]
 # Integration config
 time_interval = (0,1000)
 max_time_step = 0.01
-
-# Interval config
-s = symbols('s')
 
 # Metric config
 t = Function('t')(s)
@@ -36,20 +45,27 @@ gₘₖ = Matrix([
     [0          ,0          ,0          ,0          ]
 ])
 
+# Integration config
+T = 1000
+time_interval = (0,T)
+max_time_step = 1
+
 
 if __name__ == "__main__":
 
     # Calculating geodesics
-    geodesics_obj : list = Geodesics(s, gₘₖ, coordinates)
-    geodesics_symbolic = geodesics_obj._dₛuᵏ
-    geodesics_lambda = geodesics_obj._dₛuᵏ_lambda
+    print("Calculating geodesics")
+    geodesics: Geodesics = Geodesics(s, gₘₖ, coordinates)
+    geodesics_symbolic = geodesics._dₛuᵏ
+    geodesics_lambda = geodesics._dₛuᵏ_lambda
 
     # Integration of ODE system
-    ode_result = geodesics_obj.integrate(initial_values = initial_values, time_interval = time_interval, max_time_step = max_time_step)
+    print("Integrating")
+    result: DiffEquationsSolution = integrate_diff_eqs(geodesics = geodesics, time_interval = time_interval, initial_values = initial_values, max_step = max_time_step)
 
     # Velocity calculation
-    speed_equation : Function = None
-    velocities = geodesics_obj.calculate_velocities(speed_equation)
+    speed_equation : Function = (r.diff(s)**2 + r**2 * φ.diff(s))**(1/2)
+    velocities = calculate_velocities(speed_equation, result)
 
     # Printing
     if print_output is True:
@@ -59,11 +75,7 @@ if __name__ == "__main__":
             print()
 
         print("Integration result: ")
-        print(ode_result)
-
-        from validationTests.val_schwarzschild import *
-        print(f"Energy conserved: {check_k(ode_result.y[1], ode_result.y[4], rs=rs)}")
-        print(f"Angular momentum conserved: {check_h(ode_result.y[1], ode_result.y[7], rs=rs)}")
+        print(result.solver_result)
 
 
     # Plotting
@@ -76,14 +88,13 @@ if __name__ == "__main__":
         plt.title("Velocity of a star orbiting a blackhole")
         ax.set_ylabel("Velocity")
         ax.set_xlabel("Time")
-        plt.plot(ode_result.y[0],velocities)
+        plt.plot(result.x0,velocities)
         fig.savefig(velocity_pdf_name)
         plt.show()
         plt.close()
 
     if plot_orbit is True:
         # Plotting orbit
-        # Getting 
         fig, ax = plt.subplots()
 
         ...

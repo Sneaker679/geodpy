@@ -1,5 +1,8 @@
-configs.txt
 venv/
-sympyTests.py
-__pycache__/
-outputs/*
+examples/outputs/**
+examples/backup
+examples/notes
+**/__pycache__
+
+
+source/sympyTests.py
