@@ -51,7 +51,6 @@ def integrate_diff_eqs(
     events: Callable = None,
 ) -> DiffEquationsSolution:
 
-    print(events)
     assert len(initial_values) == 8
     ode_result = solve_ivp(
         fun = __diff_equations_system,

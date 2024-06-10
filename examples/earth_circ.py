@@ -15,9 +15,9 @@ import numpy as np
 
 print_output = True
 
-orbit_pdf_name = "outputs/o_schwarzschild.pdf"
-orbit_mp4_name = "outputs/o_schwarzschild.mp4"
-velocity_pdf_name = "outputs/v_schwarzschild.pdf"
+orbit_pdf_name = "outputs/earth_circ.pdf"
+orbit_mp4_name = "outputs/earth_circ.mp4"
+velocity_pdf_name = "outputs/v_earth_circ.pdf"
 
 plot_orbit = True
 animate = True
@@ -34,8 +34,8 @@ frame_interval = 1
 s = symbols('s')
 
 # Initial values
-rs = 1
-ro = 4
+rs = 2954
+ro = 151_820_000_000
 k = (1-rs/ro)/np.sqrt(1-3*rs/(2*ro))
 h = np.sqrt((rs/ro + (k*k - 1))*ro*ro/(1 - rs/ro))
 initial_values = [0, ro, np.pi/2, 0, k/(1-rs/ro), 0, 0, h/(ro**2)]
@@ -55,9 +55,9 @@ gₘₖ = Matrix([
 ])
 
 # Integration config
-T = 10000
+T = 9.455454125e15
 time_interval = (0,T)
-max_time_step = 1
+max_time_step = 2*T/365e1
 
 
 if __name__ == "__main__":
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     if plot_velocity is True:
         # Plotting velocity(t)
         fig, ax = plt.subplots()
-        plt.title("Velocity of a star orbiting a blackhole")
+        plt.title("Velocity of the earth orbiting the sun")
         ax.set_ylabel("Velocity")
         ax.set_xlabel("Time")
         plt.plot(result.x0,velocities)
@@ -112,7 +112,7 @@ if __name__ == "__main__":
         # Plotting orbit
         fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
 
-        plt.title("Orbit of a star around a blackhole")
+        plt.title("Orbit of earth around the sun")
         ax.add_patch(patches.Circle((0,0), rs, transform=ax.transData._b, edgecolor="k", fill=True, facecolor='k')) # blackhole
         ax.plot(result.x3, result.x1)
 
@@ -139,6 +139,6 @@ if __name__ == "__main__":
             line.set_ydata(r)
             return line
 
-        ani = animation.FuncAnimation(fig=fig, func=update, save_count=result.x0.shape[0], interval = 20)
+        ani = animation.FuncAnimation(fig=fig, func=update, save_count=result.x0.shape[0], interval = frame_interval)
         plt.show()
         if save_mp4 is True: ani.save(orbit_mp4_name)
