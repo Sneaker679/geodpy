@@ -66,10 +66,11 @@ r_ext, r_int = radii(rs, a)
 ro = 5
 σ = -1 # 1 or -1
 k, h = circ(ro, rs, a, σ)
+h -= 0.3
 dₛt = contravariant_tdot(ro, rs, a, k, h)
 dₛr = contravariant_rdot2(ro, rs, a, k, h)
 dₛφ = contravariant_phidot(ro, rs, a, k, h)
-initial_values = [0, ro, np.pi/2, 0, dₛt, dₛr, 0, dₛφ] #0.00185
+initial_values = [0, ro, np.pi/4, 0, dₛt, dₛr, 0, dₛφ] #0.00185
 
 # Metric config
 t = Function('t')(s)
@@ -100,6 +101,9 @@ if __name__ == "__main__":
     geodesics: Geodesics = Geodesics(s, gₘₖ, coordinates)
     geodesics_symbolic = geodesics._dₛuᵏ
     geodesics_lambda = geodesics._dₛuᵏ_lambda
+    import inspect
+    for func in geodesics_lambda:
+        print(inspect.getsourcelines(func), end="\n\n\n\n")
 
     # Integration of ODE system
     print("Integrating")

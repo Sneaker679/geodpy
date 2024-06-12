@@ -12,5 +12,4 @@ def vector_to_lambda(s: Symbol, expressions: Array, coordinates: list[Function])
 def expr_to_lambda(s: Symbol, expression: Function, coordinates: list[Function]) -> Callable:
     args = coordinates.copy()
     args.extend([coord.diff(s) for coord in coordinates])
-    return lambdify(args, expression, "numpy")
-
+    return lambdify(args, expression, ["scipy", "numpy"], cse=False, docstring_limit=0)

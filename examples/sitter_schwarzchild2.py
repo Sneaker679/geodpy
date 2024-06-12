@@ -15,9 +15,9 @@ import numpy as np
 
 print_output = False
 
-orbit_pdf_name = "outputs/o_schwarzschild.pdf"
-orbit_mp4_name = "outputs/o_schwarzschild.mp4"
-velocity_pdf_name = "outputs/v_schwarzschild.pdf"
+orbit_pdf_name = "outputs/o_sitter_schw.pdf"
+orbit_mp4_name = "outputs/o_sitter_schw.mp4"
+velocity_pdf_name = "outputs/o_sitter_schw.pdf"
 
 plot_orbit = True
 animate = True
@@ -34,11 +34,18 @@ frame_interval = 1
 s = symbols('s')
 
 # Initial values
-rs = 3.117165937356868 #a.l
-ro = 5e14 #5e5 a.l
-k = (1-rs/ro)/np.sqrt(1-3*rs/(2*ro))
-h = np.sqrt((rs/ro + (k*k - 1))*ro*ro/(1 - rs/ro))
-initial_values = [0, ro, np.pi/2, 0, k/(1-rs/ro), 0, 0, h/(ro**2)]
+Λ = 3*1.11e-39
+rs = 1
+ro = 5e12
+k = (1 - rs/ro)/np.sqrt(1 - 3*rs/(2*ro))
+h2 = ((k*k/(1-rs/ro) - 1)) * ro*ro
+h = h2**(1/2)
+print(f"Normal: h={h}, k={k}, h**2={h2}")
+ks = (1 - rs/ro - Λ*ro*ro/3)/np.sqrt(1-3*rs/(2*ro))
+hs2 = (ks*ks/(1 - rs/ro - Λ*ro*ro/3) - 1) * ro*ro
+hs = hs2**(1/2)
+print(f"Sitter: h={hs}, k={ks}, h**2={hs2}")
+initial_values = [0, ro, np.pi/2, 0, ks/(1-rs/ro), 0, 0, hs/(ro**2)]
 
 # Metric config
 t = Function('t')(s)
@@ -48,38 +55,30 @@ r = Function('r')(s)
 coordinates : list[Function] = [t, r, θ, φ]
 
 gₘₖ = Matrix([
-    [1-rs/r     ,0          ,0          ,0          ],
-    [0          ,1/(rs/r-1) ,0          ,0          ],
-    [0          ,0          ,-r**2      ,0          ],
-    [0          ,0          ,0          ,-r**2 * sin(θ)**2]
+    [1-rs/r - Λ*r*r/3 ,0                    ,0          ,0                ],
+    [0                ,1/(Λ*r*r/3 + rs/r-1) ,0          ,0                ],
+    [0                ,0                    ,-r**2      ,0                ],
+    [0                ,0                    ,0          ,-r**2 * sin(θ)**2]
 ])
 
 # Integration config
-T = ro*1e11
+T = ro*5e7
 time_interval = (0,T)
 max_time_step = T*1e-4
 
 
 if __name__ == "__main__":
-    print(f"k={k}\nh={h}")
+ #   print(f"k={k}\nh={h}")
 
     # Calculating geodesics
     print("Calculating geodesics")
     geodesics: Geodesics = Geodesics(s, gₘₖ, coordinates)
     geodesics_symbolic = geodesics._dₛuᵏ
     geodesics_lambda = geodesics._dₛuᵏ_lambda
-    import inspect
-    #print(inspect.getsourcelines(geodesics_lambda[1]))
 
     # Integration of ODE system
     print("Integrating")
-    result: DiffEquationsSolution = integrate_diff_eqs(geodesics = geodesics, time_interval = time_interval, initial_values = initial_values, max_step = max_time_step, rtol=1e-10, atol=1e-10)
-
-    """
-    for value in result.x1:
-        print(str(value))
-    print(len(result.x1))
-    """
+    result: DiffEquationsSolution = integrate_diff_eqs(geodesics = geodesics, time_interval = time_interval, initial_values = initial_values, max_step = max_time_step)
 
     # Velocity calculation
     speed_equation : Function = (r.diff(s)**2 + r**2 * φ.diff(s))**(1/2)

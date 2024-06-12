@@ -1,5 +1,6 @@
 from geodesics import Geodesics
 from integration import integrate_diff_eqs, DiffEquationsSolution
+from body import Body
 
 from utilities.coord_transformation import spherical_to_cartesian
 from utilities.velocities import calculate_velocities
@@ -73,7 +74,18 @@ if __name__ == "__main__":
 
     # Integration of ODE system
     print("Integrating")
-    result: DiffEquationsSolution = integrate_diff_eqs(geodesics = geodesics, time_interval = time_interval, initial_values = initial_values, max_step = max_time_step, rtol=1e-10, atol=1e-10)
+    body = Body(geodesics, initial_values[0:4], initial_values[4:8])
+    print(body.pos[0])
+    print(body.pos[1])
+    print(body.pos[2])
+    print(body.pos[3])
+    body.solve_trajectory(time_interval = time_interval, max_step = max_time_step, rtol=1e-10, atol=1e-10)
+    print(body.pos[0])
+    print(body.pos[1])
+    print(body.pos[2])
+    print(body.pos[3])
+    #result: DiffEquationsSolution = (time_interval = time_interval, max_step = max_time_step, rtol=1e-10, atol=1e-10)
+    exit()
 
     """
     for value in result.x1:
