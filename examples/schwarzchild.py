@@ -5,7 +5,6 @@ from utilities.coord_transformation import spherical_to_cartesian
 from utilities.velocities import calculate_velocities
 
 from sympy import *
-import matplotlib.animation as animation
 import numpy as np
 
 # Possible symbols
@@ -103,6 +102,7 @@ if __name__ == "__main__":
     # Plotting
     import matplotlib.pyplot as plt
     import matplotlib.patches as patches
+    import matplotlib.animation as animation
 
     if plot_velocity is True:
         # Plotting velocity(t)

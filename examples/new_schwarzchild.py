@@ -67,35 +67,17 @@ if __name__ == "__main__":
     # Calculating geodesics
     print("Calculating geodesics")
     geodesics: Geodesics = Geodesics(s, gₘₖ, coordinates)
-    geodesics_symbolic = geodesics._dₛuᵏ
-    geodesics_lambda = geodesics._dₛuᵏ_lambda
-    import inspect
-    #print(inspect.getsourcelines(geodesics_lambda[1]))
+    #import inspect
+    #print(inspect.getsourcelines(geodesics._dₛuᵏ_lambda[1]))
 
     # Integration of ODE system
-    print("Integrating")
+    print("Solving trajectory")
     body = Body(geodesics, initial_values[0:4], initial_values[4:8])
-    print(body.pos[0])
-    print(body.pos[1])
-    print(body.pos[2])
-    print(body.pos[3])
     body.solve_trajectory(time_interval = time_interval, max_step = max_time_step, rtol=1e-10, atol=1e-10)
-    print(body.pos[0])
-    print(body.pos[1])
-    print(body.pos[2])
-    print(body.pos[3])
-    #result: DiffEquationsSolution = (time_interval = time_interval, max_step = max_time_step, rtol=1e-10, atol=1e-10)
-    exit()
-
-    """
-    for value in result.x1:
-        print(str(value))
-    print(len(result.x1))
-    """
 
     # Velocity calculation
     speed_equation : Function = (r.diff(s)**2 + r**2 * φ.diff(s))**(1/2)
-    velocities = calculate_velocities(speed_equation, result)
+    velocities = calculate_velocities(speed_equation, body)
 
     # Printing
     if print_output is True:
@@ -105,11 +87,11 @@ if __name__ == "__main__":
             print()
 
         print("Integration result: ")
-        print(result.solver_result)
+        print(body.solver_result)
 
         from validationTests.schwarzschild import *
-        print(f"Energy conserved: {check_k(result.x1, result.dx1, rs=rs)}")
-        print(f"Angular momentum conserved: {check_h(result.x1, result.dx3, rs=rs)}")
+        print(f"Energy conserved: {check_k(body.pos[1], body.vel[1], rs=rs)}")
+        print(f"Angular momentum conserved: {check_h(body.pos[1], body.vel[3], rs=rs)}")
 
 
     # Plotting
@@ -122,19 +104,19 @@ if __name__ == "__main__":
         plt.title("Velocity of a star orbiting a blackhole")
         ax.set_ylabel("Velocity")
         ax.set_xlabel("Time")
-        plt.plot(result.x0,velocities)
+        plt.plot(body.pos[0], velocities)
         if v_save_pdf is True: fig.savefig(velocity_pdf_name)
         plt.show()
         plt.close()
 
-    max_radial_distance = np.max(result.x1)
+    max_radial_distance = np.max(body.pos[1])
     if plot_orbit is True:
         # Plotting orbit
         fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
 
         plt.title("Orbit of a star around a blackhole")
         ax.add_patch(patches.Circle((0,0), rs, transform=ax.transData._b, edgecolor="k", fill=True, facecolor='k')) # blackhole
-        ax.plot(result.x3, result.x1)
+        ax.plot(body.pos[3], body.pos[1])
 
         ax.set_ylim(0, max_radial_distance*6/5)
 
@@ -144,21 +126,21 @@ if __name__ == "__main__":
     if animate is True:
         fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
         ax.add_patch(patches.Circle((0,0), rs, transform=ax.transData._b, edgecolor="k", fill=True, facecolor='k')) # blackhole
-        line = ax.plot(result.x3, result.x1)[0]
+        line = ax.plot(body.pos[3], body.pos[1])[0]
         ax.set_ylim(0, max_radial_distance*6/5)
 
         def update(frame):
             try:
-                plt.title(f"r = {result.x1[frame]}, t = {int(result.x0[frame])}, s = {int(result.s[frame])}")
+                plt.title(f"r = {body.pos[1][frame]}, t = {int(body.pos[0][frame])}, s = {int(body.s[frame])}")
             except:
                 pass
-            r = result.x1[:frame]
-            phi = result.x3[:frame]
+            r = body.pos[1][:frame]
+            phi = body.pos[3][:frame]
             # update the line plot:
             line.set_xdata(phi)
             line.set_ydata(r)
             return line
 
-        ani = animation.FuncAnimation(fig=fig, func=update, save_count=result.x0.shape[0], interval = 20)
+        ani = animation.FuncAnimation(fig=fig, func=update, save_count=body.pos[0].shape[0], interval = 20)
         plt.show()
         if save_mp4 is True: ani.save(orbit_mp4_name)
