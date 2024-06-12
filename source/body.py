@@ -13,9 +13,11 @@ class Body:
         self._geodesics   = geodesics
         self._coordinates = geodesics._coordinates
         self._interval    = geodesics._s
+
         self.s   = np.array([0])
         self.pos = np.array([[position_vec[0]], [position_vec[1]], [position_vec[2]], [position_vec[3]]])
         self.vel = np.array([[velocity_vec[0]], [velocity_vec[1]], [velocity_vec[2]], [velocity_vec[3]]])
+
         self.solver_result = None
 
     def solve_trajectory(
@@ -46,7 +48,6 @@ class Body:
         self.vel = self.solver_result.y[4:8]
 
         return self.solver_result.status == 0
-
 
     # Solved function
     @staticmethod

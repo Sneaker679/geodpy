@@ -1,4 +1,6 @@
 from body import Body
+from .velocities import calculate_velocities
+from sympy import *
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -14,10 +16,13 @@ class BodyPlotter:
         self._coordinate_string = ['t', 'x', 'y', 'z']
         self.fig, self.ax = None, None
         self.fig_ani, self.ax_ani = None, None
+        self.fig_vel, self.ax_vel = None, None
+        self.patches = []
+        self.patches_ani = []
         self.ani = None
 
 
-    def plot(self, title: str, patches = []) -> None:
+    def plot(self, title: str) -> None:
         if self._coordinate_type in ["2Dcartesian", "polar"]:
             self.fig = plt.figure()
             match self._coordinate_type:
@@ -42,7 +47,8 @@ class BodyPlotter:
 
         self.ax.set_title(title)
 
-        for patch in patches:
+        for patch in self.patches:
+            patch.set(transform=self.ax.transData._b)
             self.ax.add_patch(patch)
 
     def save_plot(self, file_name: str = "body") -> None:
@@ -51,7 +57,7 @@ class BodyPlotter:
         self.fig.savefig(file_name)
 
 
-    def animate(self, patches = []) -> None:
+    def animate(self, frame_interval: int = 20) -> None:
         self.fig_ani = plt.figure()
 
         border = np.max(self.body.pos[1]) * 1.2
@@ -68,8 +74,9 @@ class BodyPlotter:
             case _:
                 raise NotImplementedError
 
-        for patch in patches:
-            self.ax.add_patch(patch)
+        for patch in self.patches_ani:
+            patch.set(transform=self.ax.transData._b)
+            self.ax_ani.add_patch(patch)
 
         self.ani = animation.FuncAnimation(fig=self.fig_ani, func=self.__update_animation, save_count=self.body.pos.shape[1], interval=20, fargs=(line, ))
 
@@ -116,8 +123,45 @@ class BodyPlotter:
 
         return title
 
+
+    def plot_velocity(self, title: str) -> np.array:
+        self.fig_vel = plt.figure()
+        self.ax_vel = self.fig.add_subplot(111)
+
+        s = self.body._interval
+        match self._coordinate_type:
+            case coord if coord in ["2Dcartesian", "3Dcartesian"]:
+                x, y, z = self.body._coordinates[1:4]
+                speed_equation : Function = (r.diff(s)**2 + r**2 * φ.diff(s))**(1/2)
+
+            case coord if coord in ["polar", "spherical"]:
+                r, θ, φ = self.body._coordinates[1:4]
+                speed_equation : Function = (r.diff(s)**2 + r**2 * φ.diff(s)**2 + r**2 * sin(θ)**2 * θ.diff(s)**2)**(1/2)
+
+            case _:
+                raise NotImplementedError
+
+        self.ax_vel.set_ylabel("Velocity")
+        self.ax_vel.set_xlabel("Time")
+        velocities = calculate_velocities(speed_equation, self.body)
+        self.ax_vel.plot(self.body.pos[0], velocities)
+        self.ax_vel.set_title(title)
+        return velocities
+
+    def save_plot_velocity(self, file_name: str = "body_velocity") -> None:
+        if file_name[-4:-1] != ".pdf":
+            file_name.join(".pdf")
+        self.fig_vel.savefig(file_name)
+
+
     def show(self) -> None:
         plt.show()
+
+    def set_patches(self, patches: list) -> None:
+        import copy
+        self.patches = patches
+        self.patches_ani = copy.deepcopy(patches)
+
 
     def set_2Dcartesian(self, print_info: bool = False) -> None:
         self._coordinate_type = "2Dcartesian"
