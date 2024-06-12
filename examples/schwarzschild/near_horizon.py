@@ -1,10 +1,10 @@
+import numpy as np
 from schwarszchild import schwarzschild, kcirc, hcirc
 
 # Initial values
 rs = 1 
 ro = 5
-h, k = kcirc(rs, ro), hcirc(rs, ro)
-print(h,k)
+k, h = kcirc(rs, ro), hcirc(rs, ro)
 
 output_kwargs = {
     "orbit_pdf_name"   : "outputs/o_schwarzschild.pdf",
@@ -18,4 +18,4 @@ output_kwargs = {
     "v_save_pdf"       : False  
 }
 
-schwarzschild(rs=rs, ro=ro, h=h, k=k, output_kwargs=output_kwargs, verbose=1)
+schwarzschild(rs=rs, ro=ro, h=h, k=k, T=None, output_kwargs=output_kwargs, verbose=1)

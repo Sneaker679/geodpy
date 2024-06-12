@@ -107,6 +107,10 @@ class BodyPlotter:
         return line
 
     def __update_title(self,frame: int) -> str:
+        lenght = len(self.body.pos[0])
+        if frame >= lenght:
+            frame = lenght - 1
+
         s = '{:e}'.format(self.body.s[frame]),
         pos = [
             '{:e}'.format(self.body.pos[0][frame]),

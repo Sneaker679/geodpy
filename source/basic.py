@@ -33,7 +33,7 @@ def basic(
     body.solve_trajectory(**solver_kwargs)
 
     # Printing
-    if verbose == 1:
+    if verbose == 2:
         print("Geodesic differential equations: ")
         for equation in geodesics._dₛuᵏ:
             pprint(equation)

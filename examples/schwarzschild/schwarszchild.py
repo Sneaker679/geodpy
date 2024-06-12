@@ -17,10 +17,11 @@ def kcirc(rs, r) -> float:
 def hcirc(rs, r) -> float:
     return np.sqrt(rs*r/(2-3*rs/r))
 
-def schwarzschild(rs, ro, h, k, output_kwargs: dict = {}, verbose: int = 0) -> None:
+def schwarzschild(rs: float, ro: float, h: float, k: float, T: float|None, output_kwargs: dict = {}, verbose: int = 1) -> None:
     # Initial values
     pos = [0, ro, np.pi/2, 0]
-    vel = [k/(1-rs/ro), 0, 0, h/(ro*ro)]
+    vel = [k/(1-rs/ro), 0, 0, h/(ro**2)]
+    if verbose == 1: print(f"h={h}, k={k}")
 
     # Metric config
     s = symbols('s')
@@ -39,7 +40,7 @@ def schwarzschild(rs, ro, h, k, output_kwargs: dict = {}, verbose: int = 0) -> N
 
 
     # Solver config
-    T = 2*np.pi*(2*ro*ro*ro/rs)**(1/2) # Third law of Kepler
+    if T is None: T = 2*np.pi*(2*ro*ro*ro/rs)**(1/2) # Third law of Kepler
     solver_kwargs = {
         "time_interval": (0,T),           
         "method"       : "Radau",          
@@ -57,7 +58,7 @@ def schwarzschild(rs, ro, h, k, output_kwargs: dict = {}, verbose: int = 0) -> N
         "initial_pos"  : pos, 
         "initial_vel"  : vel, 
         "solver_kwargs": solver_kwargs, 
-        "verbose"      : 1, 
+        "verbose"      : verbose, 
     }
     body = basic(**args_basic)
 
