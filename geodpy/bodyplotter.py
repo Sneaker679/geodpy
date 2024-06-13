@@ -37,6 +37,7 @@ class BodyPlotter:
                     self.ax.set_ylim(-border, border)
                     self.ax.set_xlim(-border, border)
                     self.ax.plot(self.body.pos[1], self.body.pos[2])
+                    self.ax.set_aspect(1)
                 else: raise NotImplementedError
 
             case Spherical.__qualname__:
@@ -74,6 +75,7 @@ class BodyPlotter:
                     line = self.ax_ani.plot(self.body.pos[1], self.body.pos[2])[0]
                     self.ax_ani.set_xlim(-border, border)
                     self.ax_ani.set_ylim(-border, border)
+                    self.ax.set_aspect(1)
                 else: raise NotImplementedError
 
             case Spherical.__qualname__:

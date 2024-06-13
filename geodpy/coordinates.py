@@ -57,7 +57,7 @@ class Spherical(Coordinates):
         y = r * sinθ * np.sin(φ)
         z = r * np.cos(θ)
 
-        return np.array(pos[0], x, y, z)
+        return np.array([pos[0], x, y, z])
 
 class OblongEllipsoid:
     interval: Symbol            = symbols('s')
@@ -77,4 +77,4 @@ class OblongEllipsoid:
         y = np.sqrt(r*r + a*a) * sinθ * np.sin(φ)
         z = r * np.cos(θ)
 
-        return np.array(pos[0], x, y, z)
+        return np.array([pos[0], x, y, z])

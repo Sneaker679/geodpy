@@ -1,4 +1,4 @@
-from geodpy import Geodesics, Body, basic, BodyPlotter, Spherical
+from geodpy import Geodesics, Body, basic, BodyPlotter, OblongEllipsoid, Spherical
 
 from sympy import *
 import matplotlib.animation as animation
@@ -44,14 +44,15 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ: float = np.pi/2
     if verbose == 1: print(f"h={h}, k={k}, a={a}")
 
     # Metric config
-    coordinates = Spherical
-    t, r, θ, φ = Spherical.coords
-
+    coordinates = OblongEllipsoid
+    t, r, θ, φ = OblongEllipsoid.coords
+    p2 = r*r + a*a*(cos(θ))**2 
+    Δ = r*r + a*a - r*rs
     gₘₖ = Matrix([
-        [1-rs*r/(p*p)             ,0      ,0    ,(a*r*rs*sin(θ)**2)/(p*p)                            ],
-        [0                        ,-p*p/Δ ,0    ,0                                                   ],
-        [0                        ,0      ,-p*p ,0                                                   ],
-        [(a*r*rs*sin(θ)**2)/(p*p) ,0      ,0    ,-(r*r + a*a + (a*a*r*rs*sin(θ)**2)/(p*p))*sin(θ)**2]
+        [1-rs*r/(p2)             ,0      ,0    ,(a*r*rs*sin(θ)**2)/(p2)                           ],
+        [0                       ,-p2/Δ  ,0    ,0                                                 ],
+        [0                       ,0      ,-p2  ,0                                                 ],
+        [(a*r*rs*sin(θ)**2)/(p2) ,0      ,0    ,-(r*r + a*a + (a*a*r*rs*sin(θ)**2)/(p2))*sin(θ)**2]
     ])
 
 
@@ -97,6 +98,7 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ: float = np.pi/2
     r_ext, r_int = radii(rs, a) 
     ps.append(patches.Circle((0,0), r_ext, edgecolor="k", fill=True, facecolor='k')) # blackhole ext
     ps.append(patches.Circle((0,0), r_int, edgecolor="b")) # blackhole int
+    body = body.get_cartesian_body(a=a)
     plotter = BodyPlotter(body)
     plotter.set_patches(ps)
 
