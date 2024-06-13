@@ -5,14 +5,16 @@ from schwarszchild import schwarzschild, kcirc, hcirc
 rs = 1 
 ro = 5
 k, h = kcirc(rs, ro), hcirc(rs, ro)
+h -= 0.1
 
 output_kwargs = {
+    "orbit_plot_title" : "Trajectory of a star orbiting a blackhole",
     "orbit_pdf_name"   : "outputs/o_schwarzschild.pdf",
     "orbit_mp4_name"   : "outputs/o_schwarzschild.mp4",
-    "velocity_pdf_name": "outputs/o_schwarzschild.mp4",
+    "velocity_pdf_name": "outputs/v_schwarzschild.pdf",
     "plot_orbit"       : True,
-    "animate"          : False,
-    "plot_velocity"    : False,
+    "animate"          : True,
+    "plot_velocity"    : True,
     "save_pdf"         : False,
     "save_mp4"         : False,
     "v_save_pdf"       : False  

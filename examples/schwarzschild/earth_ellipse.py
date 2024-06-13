@@ -8,12 +8,13 @@ k = 1.000000005
 h = 14_857_341
 
 output_kwargs = {
-    "orbit_pdf_name"   : "outputs/o_schwarzschild.pdf",
-    "orbit_mp4_name"   : "outputs/o_schwarzschild.mp4",
-    "velocity_pdf_name": "outputs/o_schwarzschild.mp4",
+    "orbit_plot_title" : "Elliptical orbit of Earth"
+    "orbit_pdf_name"   : "outputs/o_earth_ellipse.pdf",
+    "orbit_mp4_name"   : "outputs/o_earth_ellipse.mp4",
+    "velocity_pdf_name": "outputs/v_earth_ellipse.pdf",
     "plot_orbit"       : True,
     "animate"          : True,
-    "plot_velocity"    : False,
+    "plot_velocity"    : True,
     "save_pdf"         : False,
     "save_mp4"         : False,
     "v_save_pdf"       : False  

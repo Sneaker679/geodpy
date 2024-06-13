@@ -1,6 +1,7 @@
-from geodesics import Geodesics
-from body import Body
-from utilities.bodyplotter import BodyPlotter
+from .geodesics import Geodesics
+from .body import Body
+from .coordinates import Coordinates
+from .bodyplotter import BodyPlotter
 
 from sympy import *
 import matplotlib.patches as patches
@@ -9,8 +10,7 @@ import matplotlib.patches as patches
 #τ,t,r,a,b,c,θ,φ,η,ψ,x,y 
 
 def basic(
-    s:             Symbol,
-    coordinates:   list[Function],
+    coordinates:   Coordinates,
     g_mk:          Matrix,
     initial_pos:   list[float],
     initial_vel:   list[float],
@@ -26,7 +26,7 @@ def basic(
     solver_kwargs.setdefault("events"       , None                                  )
 
     print("Calculating geodesics")
-    geodesics: Geodesics = Geodesics(s, g_mk, coordinates)
+    geodesics: Geodesics = Geodesics(coordinates, g_mk)
     body = Body(geodesics, initial_pos, initial_vel)
 
     print("Solving trajectory")

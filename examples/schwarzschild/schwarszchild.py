@@ -1,7 +1,4 @@
-from geodesics import Geodesics
-from body import Body
-from basic import basic
-from utilities.bodyplotter import BodyPlotter
+from geodpy import Geodesics, Body, basic, BodyPlotter, Spherical
 
 from sympy import *
 import matplotlib.animation as animation
@@ -17,19 +14,15 @@ def kcirc(rs, r) -> float:
 def hcirc(rs, r) -> float:
     return np.sqrt(rs*r/(2-3*rs/r))
 
-def schwarzschild(rs: float, ro: float, h: float, k: float, T: float|None, output_kwargs: dict = {}, verbose: int = 1) -> None:
+def schwarzschild(rs: float, ro: float, h: float, k: float, T: float|None = None, output_kwargs: dict = {}, verbose: int = 1) -> Body:
     # Initial values
     pos = [0, ro, np.pi/2, 0]
     vel = [k/(1-rs/ro), 0, 0, h/(ro**2)]
     if verbose == 1: print(f"h={h}, k={k}")
 
     # Metric config
-    s = symbols('s')
-    t = Function('t')(s)
-    r = Function('r')(s)
-    θ = Function('θ')(s)
-    φ = Function('φ')(s)
-    coordinates : list[Function] = [t, r, θ, φ]
+    coordinates = Spherical
+    t, r, θ, φ = Spherical.coords
 
     gₘₖ = Matrix([
         [1-rs/r     ,0          ,0          ,0          ],
@@ -52,9 +45,8 @@ def schwarzschild(rs: float, ro: float, h: float, k: float, T: float|None, outpu
 
     # Basic run config
     args_basic = {
-        "s"            : symbols('s'), 
         "coordinates"  : coordinates,
-        "g_mk"          : gₘₖ, 
+        "g_mk"         : gₘₖ, 
         "initial_pos"  : pos, 
         "initial_vel"  : vel, 
         "solver_kwargs": solver_kwargs, 
@@ -63,9 +55,10 @@ def schwarzschild(rs: float, ro: float, h: float, k: float, T: float|None, outpu
     body = basic(**args_basic)
 
     # Output options
+    orbit_plot_title:  str  = output_kwargs.get("orbit_plot_title" , "Trajectory of a star orbiting a blackhole")
     orbit_pdf_name:    str  = output_kwargs.get("orbit_pdf_name"   , "outputs/o_schwarzschild.pdf")
     orbit_mp4_name:    str  = output_kwargs.get("orbit_mp4_name"   , "outputs/o_schwarzschild.mp4")
-    velocity_pdf_name: str  = output_kwargs.get("velocity_pdf_name", "outputs/o_schwarzschild.mp4") 
+    velocity_pdf_name: str  = output_kwargs.get("velocity_pdf_name", "outputs/v_schwarzschild.pdf") 
     plot_orbit:        bool = output_kwargs.get("plot_orbit"       , True         )
     animate:           bool = output_kwargs.get("animate"          , False        )
     plot_velocity:     bool = output_kwargs.get("plot_velocity"    , False        )
@@ -79,15 +72,17 @@ def schwarzschild(rs: float, ro: float, h: float, k: float, T: float|None, outpu
     # Plotting
     ps = [patches.Circle((0,0), rs, edgecolor="k", fill=True, facecolor='k')] # blackhole
     plotter = BodyPlotter(body)
-    plotter.set_polar()
     plotter.set_patches(ps)
 
-    if plot_orbit:    plotter.plot(title="Trajectory of a star orbiting a blackhole")
+    if plot_orbit:    plotter.plot(title=orbit_plot_title)
     if animate:       plotter.animate()
-    if plot_velocity: plotter.plot_velocity("velocity")
+    if plot_velocity:
+        body.calculate_velocities()
+        plotter.plot_velocity("Velocity")
 
     if save_pdf:   plot.save_plot(orbit_pdf_name)
     if save_mp4:   plot.save_animation(orbit_mp4_name)
     if v_save_pdf: plot.save_plot_velocity(velocity_pdf_name)
 
     plotter.show()
+    return body
