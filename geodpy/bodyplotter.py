@@ -6,10 +6,15 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.animation as animation
 import numpy as np
+
+# Possible symbols
 #τ,t,r,a,b,c,θ,φ,η,ψ,x,y 
 
+### BodyPlotter class ###
+# Class that facilitates the plotting of Body objects.
 class BodyPlotter:
     
+    # Parameter "dim" is the number of dimensions to plot (2 or 3)
     def __init__(self, body: Body, dim: int = 2) -> None:
         self.body = body
         self.coordinates = body._coordinates
@@ -20,7 +25,7 @@ class BodyPlotter:
         self.fig_vel, self.ax_vel = None, None
 
         self.patches = []
-        self.patches_ani = [] # Theses lists are always the same. Needed because only patches are unique to figures... Matplotlib flaw.
+        self.patches_ani = [] # Theses lists are always the same. Needed only because patches objects are unique to figures... Matplotlib flaw.
 
         self.ani = None
 
@@ -75,7 +80,7 @@ class BodyPlotter:
                     line = self.ax_ani.plot(self.body.pos[1], self.body.pos[2])[0]
                     self.ax_ani.set_xlim(-border, border)
                     self.ax_ani.set_ylim(-border, border)
-                    self.ax.set_aspect(1)
+                    self.ax_ani.set_aspect(1)
                 else: raise NotImplementedError
 
             case Spherical.__qualname__:
@@ -149,7 +154,7 @@ class BodyPlotter:
         assert self.body.vel_norm is not None
 
         self.fig_vel = plt.figure()
-        self.ax_vel = self.fig.add_subplot(111)
+        self.ax_vel = self.fig_vel.add_subplot(111)
 
         self.ax_vel.set_ylabel("Velocity")
         self.ax_vel.set_xlabel("Time")

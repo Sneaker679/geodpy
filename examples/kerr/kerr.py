@@ -34,12 +34,12 @@ def contravariant_rdot2(r: float, rs: float, a: float, k: float, h: float) -> fl
 def contravariant_phidot(r: float, rs: float, a: float, k: float, h: float) -> float:
         return 1/(r*r + a*a - r*rs) * (a*rs*k/r + (1 - rs/r)*h)
 
-def kerr(rs: float, ro: float, h: float, k: float, a: float, θ: float = np.pi/2, T: float|None = None, output_kwargs: dict = {}, verbose: int = 1) -> None:
+def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np.pi/2, T: float|None = None, output_kwargs: dict = {}, verbose: int = 1) -> None:
     # Initial values
     dₛt = contravariant_tdot(ro, rs, a, k, h)
     dₛr = contravariant_rdot2(ro, rs, a, k, h)
     dₛφ = contravariant_phidot(ro, rs, a, k, h)
-    pos = [0, ro, θ, 0]
+    pos = [0, ro, θ_init, 0]
     vel = [dₛt, dₛr, 0, dₛφ] 
     if verbose == 1: print(f"h={h}, k={k}, a={a}")
 
@@ -96,10 +96,12 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ: float = np.pi/2
     # Plotting
     ps = []
     r_ext, r_int = radii(rs, a) 
+    sls = rs/2 + np.sqrt(rs*rs/4 - a*a*np.cos(θ_init))
     ps.append(patches.Circle((0,0), r_ext, edgecolor="k", fill=True, facecolor='k')) # blackhole ext
-    ps.append(patches.Circle((0,0), r_int, edgecolor="b")) # blackhole int
-    body = body.get_cartesian_body(a=a)
-    plotter = BodyPlotter(body)
+    ps.append(patches.Circle((0,0), r_int, edgecolor="b", fill=True)) # blackhole int
+    ps.append(patches.Circle((0,0), sls, edgecolor="r", fill=False)) # blackhole int
+    body_cart = body.get_cartesian_body(a=a)
+    plotter = BodyPlotter(body_cart)
     plotter.set_patches(ps)
 
     if plot_orbit:    plotter.plot(title=orbit_plot_title)

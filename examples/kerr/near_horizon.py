@@ -4,7 +4,7 @@ from kerr import kerr, circ
 # Initial values
 rs = 1 
 ro = 5
-a = 0 #0.495
+a = 0.495
 σ = -1 #1 or -1
 assert a < rs/2
 k, h = circ(rs, ro, a, σ)
@@ -23,4 +23,4 @@ output_kwargs = {
     "v_save_pdf"       : False  
 }
 
-kerr(rs=rs, ro=ro, h=h, k=k, a=a, θ=np.pi/2, T=500, output_kwargs=output_kwargs, verbose=1)
+kerr(rs=rs, ro=ro, h=h, k=k, a=a, θ_init=np.pi/2, T=500, output_kwargs=output_kwargs, verbose=1)

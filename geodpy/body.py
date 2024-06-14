@@ -8,6 +8,9 @@ from scipy.integrate import solve_ivp
 from scipy.integrate._ivp.ivp import OdeResult
 import numpy as np
 
+### Body class ###
+# Class responsible for solving the geodesic differential equation system and storing the results. The class
+# can also calculate the norm of the velocity vector and convert itself a cartesian coordinate system.
 class Body:
 
     def __init__(self, geodesics: Geodesics = None, position_vec: list = [0,0,0,0], velocity_vec: list = [0,0,0,0]) -> None:
@@ -22,6 +25,7 @@ class Body:
 
         self.solver_result = None
 
+    # Wrapper for scipy.integrate.solve_ivp
     def solve_trajectory(
         self,
         time_interval: tuple[float, float],
@@ -51,7 +55,7 @@ class Body:
 
         return self.solver_result.status == 0
 
-    # Solved function
+    # Function solved with scipy.integrate.solve_ivp
     @staticmethod
     def __diff_equations_system(dτ, state, equations) -> tuple:
         x0, x1, x2, x3, v0, v1, v2, v3  = state
@@ -63,13 +67,16 @@ class Body:
         
         return v0, v1, v2, v3, a0, a1, a2, a3
 
-    # Calculates the velocity as a function of coordinate time (not proper time). This function assumes that self.pos[0] is time.
+    # Calculates the norm of the velocity vector for each points as a function of coordinate time.
+    # This function assumes that self.pos[0] is time.
     def calculate_velocities(self) -> None:
         velocity_equation = self._coordinates.velocity_equation
 
+        # Defining the arguments for the lambda velocity equation
         symbolic_args = list(self._coordinates.coords)[1:4]
         symbolic_args.extend([coord.diff(self._coordinates.interval) for coord in symbolic_args])
 
+        # Making a lambdified velocity equation
         velocity2_equation = velocity_equation ** 2 # Necessary because lambda function doesn't like taking the sqrt of an expression.
         velocity2_equation_lambda = lambdify(symbolic_args, velocity2_equation, ["numpy", "scipy"])
 
@@ -80,11 +87,13 @@ class Body:
         args.append(self.pos[2])
         args.append(self.pos[3])
 
+        # Taking derivative of position vector
         for coord in range(3):
             args.append(np.gradient(args[coord],t))
 
         self.vel_norm = velocity2_equation_lambda(*args)**(1/2) # Taking square root to undo the square of earlier.
 
+    # Creates a new Body object from the current body, but represented in cartesian coordinates.
     def get_cartesian_body(self, **kwargs):
         new_body = Body(geodesics = None)
         new_body._coordinates = Cartesian

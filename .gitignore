@@ -1,8 +1,4 @@
-venv/
-examples/outputs/**
-examples/backup
+**/outputs/*
 examples/notes
 **/__pycache__
-
-
-source/sympyTests.py
+venv

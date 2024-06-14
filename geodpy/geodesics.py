@@ -4,11 +4,14 @@ import numpy as np
 from .to_lambda import vector_to_lambda
 from .coordinates import Coordinates
 
+### Geodesic class ###
+# Class that acts as a variables container for all geodesics.
 class Geodesics:
 
     def __init__(self, coordinates: Coordinates, gₘₖ: Matrix):
         assert gₘₖ.shape[0] == len(coordinates.coords)
         
+        # Automatic calculation of all geodesics variables
         self._gₘₖ= gₘₖ
         self._coordinates = coordinates
         self._dₛuᵏ= self.__contravariant_acc()
