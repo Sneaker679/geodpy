@@ -1,4 +1,4 @@
-from geodpy import Geodesics, Body, basic, BodyPlotter, OblongEllipsoid, Spherical
+from geodpy import Geodesics, Body, basic, PolarPlot, OblongEllipsoid, Spherical
 
 from sympy import *
 import matplotlib.animation as animation
@@ -16,9 +16,14 @@ def circ(rs: float, r: float, a: float, σ: int) -> tuple[float,float]:
     den = np.sqrt( 1 - 1.5*rs/r + 2*rot_term )
     return num_k/den, σ*np.sqrt(r*rs/2)*num_h/den # k, h
     
-def radii(rs: float, a: float) -> tuple[float,float]:
+def radii_oblong(rs: float, a: float) -> tuple[float, float]:
     assert a <= rs/2 
-    return 1/2 * (rs + np.sqrt(rs*rs - 4*a*a)), 1/2 * (rs - np.sqrt(rs*rs - 4*a*a))
+    r_ext, r_int = 1/2 * (rs + np.sqrt(rs*rs - 4*a*a)), 1/2 * (rs - np.sqrt(rs*rs - 4*a*a))
+    return OblongEllipsoid.to_spherical(np.array([[0,0], [r_ext,r_int], [np.pi/2,np.pi/2], [0,0]]), a=a)[1]
+
+def ergosphere_radius_oblong(rs: float, a: float, θ: float) -> float:
+    ergo = rs/2 + np.sqrt(rs*rs/4 - a*a*np.cos(θ))
+    return OblongEllipsoid.to_spherical(np.array([[0], [ergo], [np.pi/2], [0]]), a=a)[1]
 
 def contravariant_tdot(r: float, rs: float, a: float, k: float, h: float) -> float:
     Δ = r*r + a*a - r*rs
@@ -39,9 +44,14 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
     dₛt = contravariant_tdot(ro, rs, a, k, h)
     dₛr = contravariant_rdot2(ro, rs, a, k, h)
     dₛφ = contravariant_phidot(ro, rs, a, k, h)
+
     pos = [0, ro, θ_init, 0]
     vel = [dₛt, dₛr, 0, dₛφ] 
-    if verbose == 1: print(f"h={h}, k={k}, a={a}")
+
+    r_ext, r_int = radii_oblong(rs, a) 
+    ergo = ergosphere_radius_oblong(rs, a, θ_init)
+
+    if verbose == 1: print(f"h={h}, k={k}, a={a}, r_ext={r_ext}, r_int={r_int}, ergosphere_radius={ergo}")
 
     # Metric config
     coordinates = OblongEllipsoid
@@ -55,15 +65,14 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
         [(a*r*rs*sin(θ)**2)/(p2) ,0      ,0    ,-(r*r + a*a + (a*a*r*rs*sin(θ)**2)/(p2))*sin(θ)**2]
     ])
 
-
     # Solver config
     if T is None: T = 2*np.pi*(2*ro*ro*ro/rs)**(1/2) # Third law of Kepler
     solver_kwargs = {
         "time_interval": (0,T),           
         "method"       : "Radau",          
-        "max_step"     : T*1e-3,
-        "atol"         : 1e-8,              
-        "rtol"         : 1e-8,              
+        "max_step"     : T*1e-4,
+        "atol"         : 1e-4,              
+        "rtol"         : 1e-4,              
         "events"       : None,              
     }
 
@@ -94,21 +103,18 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
     assert not (v_save_pdf and not plot_velocity)
 
     # Plotting
-    ps = []
-    r_ext, r_int = radii(rs, a) 
-    sls = rs/2 + np.sqrt(rs*rs/4 - a*a*np.cos(θ_init))
-    ps.append(patches.Circle((0,0), r_ext, edgecolor="k", fill=True, facecolor='k')) # blackhole ext
-    ps.append(patches.Circle((0,0), r_int, edgecolor="b", fill=True)) # blackhole int
-    ps.append(patches.Circle((0,0), sls, edgecolor="r", fill=False)) # blackhole int
-    body_cart = body.get_cartesian_body(a=a)
-    plotter = BodyPlotter(body_cart)
-    plotter.set_patches(ps)
+    body_sph = body.get_spheric_body(a=a)
+    plotter = PolarPlot(body_sph)
 
     if plot_orbit:    plotter.plot(title=orbit_plot_title)
     if animate:       plotter.animate()
     if plot_velocity:
         body.calculate_velocities()
         plotter.plot_velocity("Velocity")
+
+    plotter.add_circle((0,0), r_ext, edgecolor="k", fill=True, facecolor='k')
+    plotter.add_circle((0,0), r_int, edgecolor="c", fill=True, facecolor='b')
+    plotter.add_circle((0,0), ergo, edgecolor="r", fill=False)
 
     if save_pdf:   plot.save_plot(orbit_pdf_name)
     if save_mp4:   plot.save_animation(orbit_mp4_name)

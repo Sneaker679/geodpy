@@ -1,4 +1,4 @@
-from geodpy import Geodesics, Body, basic, BodyPlotter, Spherical
+from geodpy import Geodesics, Body, basic, PolarPlot, Spherical
 
 from sympy import *
 import matplotlib.animation as animation
@@ -8,11 +8,14 @@ import numpy as np
 # Possible symbols
 #τ,t,r,a,b,c,θ,φ,η,ψ,x,y 
 
+def velocity_circ(rs, r, Λ=1.11e-52):
+    return np.sqrt((rs - 2*Λ*r*r*r/3)/(2*r-3*rs))
+
 def kcirc(rs, r, Λ=1.11e-52) -> float:
     return (1-rs/r-Λ*r*r/3)/np.sqrt(1-3*rs/(2*r))
 
 def hcirc(rs, r, Λ=1.11e-52) -> float:
-    return np.sqrt((rs*r/2 - Λ*r*r*r*r/3)/(1-3*rs/(2*r)))
+    return np.sqrt((rs/(2*r*r*r) - Λ/3)/((1/(r*r*r*r))*(1-3*rs/(2*r))))
 
 def sitter_schwarzschild(rs: float, ro: float, h: float, k: float, Λ: float = 1.11e-52, T: float|None = None, output_kwargs: dict = {}, verbose: int = 1) -> Body:
     # Initial values
@@ -32,7 +35,7 @@ def sitter_schwarzschild(rs: float, ro: float, h: float, k: float, Λ: float = 1
     ])
 
     # Solver config
-    if T is None: T = 2*np.pi*(2*ro*ro*ro/rs)**(1/2) # Third law of Kepler
+    if T is None: T = 2*np.pi/np.sqrt(rs/(2*ro*ro*ro) - Λ/3)
     solver_kwargs = {
         "time_interval": (0,T),           
         "method"       : "Radau",          
@@ -69,15 +72,15 @@ def sitter_schwarzschild(rs: float, ro: float, h: float, k: float, Λ: float = 1
     assert not (v_save_pdf and not plot_velocity)
 
     # Plotting
-    ps = [patches.Circle((0,0), rs, edgecolor="k", fill=True, facecolor='k')] # blackhole
-    plotter = BodyPlotter(body)
-    plotter.set_patches(ps)
+    plotter = PolarPlot(body)
 
     if plot_orbit:    plotter.plot(title=orbit_plot_title)
     if animate:       plotter.animate()
     if plot_velocity:
         body.calculate_velocities()
         plotter.plot_velocity("Velocity")
+
+    plotter.add_circle((0,0), rs, edgecolor="k", fill=True, facecolor='k')
 
     if save_pdf:   plot.save_plot(orbit_pdf_name)
     if save_mp4:   plot.save_animation(orbit_mp4_name)

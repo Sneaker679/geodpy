@@ -1,7 +1,7 @@
 from typing import Callable
 
 from .geodesics import Geodesics
-from .coordinates import Cartesian
+from .coordinates import Cartesian, Spherical
 
 from sympy import *
 from scipy.integrate import solve_ivp
@@ -100,4 +100,13 @@ class Body:
 
         new_body.s   = self.s
         new_body.pos = self._coordinates.to_cartesian(self.pos, **kwargs)
+        return new_body
+
+    # Creates a new Body object from the current body, but represented in spherical body coordinates.
+    def get_spheric_body(self, **kwargs):
+        new_body = Body(geodesics = None)
+        new_body._coordinates = Spherical
+
+        new_body.s   = self.s
+        new_body.pos = self._coordinates.to_spherical(self.pos, **kwargs)
         return new_body

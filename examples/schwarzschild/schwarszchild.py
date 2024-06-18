@@ -1,4 +1,4 @@
-from geodpy import Geodesics, Body, basic, BodyPlotter, Spherical
+from geodpy import Geodesics, Body, basic, PolarPlot, CartesianPlot2D, Spherical
 
 from sympy import *
 import matplotlib.animation as animation
@@ -70,15 +70,15 @@ def schwarzschild(rs: float, ro: float, h: float, k: float, T: float|None = None
     assert not (v_save_pdf and not plot_velocity)
 
     # Plotting
-    ps = [patches.Circle((0,0), rs, edgecolor="k", fill=True, facecolor='k')] # blackhole
-    plotter = BodyPlotter(body)
-    plotter.set_patches(ps)
+    plotter = PolarPlot(body)
 
     if plot_orbit:    plotter.plot(title=orbit_plot_title)
     if animate:       plotter.animate()
     if plot_velocity:
         body.calculate_velocities()
         plotter.plot_velocity("Velocity")
+
+    plotter.add_circle((0,0), rs, edgecolor="k", fill=True, facecolor='k')
 
     if save_pdf:   plot.save_plot(orbit_pdf_name)
     if save_mp4:   plot.save_animation(orbit_mp4_name)
