@@ -1,4 +1,4 @@
-from geodpy import Geodesics, Body, basic, PolarPlot, OblongEllipsoid, Spherical
+from geodpy import Geodesics, Body, basic, PolarPlot, CartesianPlot3D, OblongEllipsoid, Spherical
 
 from sympy import *
 import matplotlib.animation as animation
@@ -16,9 +16,12 @@ def circ(rs: float, r: float, a: float, σ: int) -> tuple[float,float]:
     den = np.sqrt( 1 - 1.5*rs/r + 2*rot_term )
     return num_k/den, σ*np.sqrt(r*rs/2)*num_h/den # k, h
     
-def radii_oblong(rs: float, a: float) -> tuple[float, float]:
+def radii(rs: float, a: float) -> tuple[float, float]:
     assert a <= rs/2 
-    r_ext, r_int = 1/2 * (rs + np.sqrt(rs*rs - 4*a*a)), 1/2 * (rs - np.sqrt(rs*rs - 4*a*a))
+    return 1/2 * (rs + np.sqrt(rs*rs - 4*a*a)), 1/2 * (rs - np.sqrt(rs*rs - 4*a*a))
+
+def radii_polar(rs: float, a: float) -> tuple[float, float]:
+    r_ext, r_int = radii(rs, a)
     return OblongEllipsoid.to_spherical(np.array([[0,0], [r_ext,r_int], [np.pi/2,np.pi/2], [0,0]]), a=a)[1]
 
 def ergosphere_radius_oblong(rs: float, a: float, θ: float) -> float:
@@ -39,7 +42,7 @@ def contravariant_rdot2(r: float, rs: float, a: float, k: float, h: float) -> fl
 def contravariant_phidot(r: float, rs: float, a: float, k: float, h: float) -> float:
         return 1/(r*r + a*a - r*rs) * (a*rs*k/r + (1 - rs/r)*h)
 
-def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np.pi/2, T: float|None = None, output_kwargs: dict = {}, verbose: int = 1) -> None:
+def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np.pi/2, T: float|None = None, output_kwargs: dict = {}, verbose: int = 1, dim: int = 2) -> None:
     # Initial values
     dₛt = contravariant_tdot(ro, rs, a, k, h)
     dₛr = contravariant_rdot2(ro, rs, a, k, h)
@@ -48,7 +51,8 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
     pos = [0, ro, θ_init, 0]
     vel = [dₛt, dₛr, 0, dₛφ] 
 
-    r_ext, r_int = radii_oblong(rs, a) 
+    r_ext_oblong, r_int_oblong = radii(rs, a) 
+    r_ext, r_int = radii_polar(rs, a) 
     ergo = ergosphere_radius_oblong(rs, a, θ_init)
 
     if verbose == 1: print(f"h={h}, k={k}, a={a}, r_ext={r_ext}, r_int={r_int}, ergosphere_radius={ergo}")
@@ -103,8 +107,13 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
     assert not (v_save_pdf and not plot_velocity)
 
     # Plotting
-    body_sph = body.get_spheric_body(a=a)
-    plotter = PolarPlot(body_sph)
+    if dim == 2:
+        body_sph = body.get_spheric_body(a=a)
+        plotter = PolarPlot(body_sph)
+    elif dim == 3:
+        body_cart = body.get_cartesian_body(a=a)
+        plotter = CartesianPlot3D(body_cart)
+    else: raise NotImplementedError
 
     if plot_orbit:    plotter.plot(title=orbit_plot_title)
     if animate:       plotter.animate()
@@ -112,13 +121,20 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
         body.calculate_velocities()
         plotter.plot_velocity("Velocity")
 
-    plotter.add_circle((0,0), r_ext, edgecolor="k", fill=True, facecolor='k')
-    plotter.add_circle((0,0), r_int, edgecolor="c", fill=True, facecolor='b')
-    plotter.add_circle((0,0), ergo, edgecolor="r", fill=False)
+    if dim == 2:
+        plotter.add_circle((0,0), r_ext, edgecolor="k", fill=True, facecolor='k')
+        plotter.add_circle((0,0), r_int, edgecolor="c", fill=True, facecolor='b')
+        plotter.add_circle((0,0), ergo, edgecolor="r", fill=False)
+    elif dim == 3:
+        θ, φ = np.mgrid[0:2*np.pi:40j, 0:np.pi:20j]
+        x = np.sqrt(r_ext_oblong*r_ext_oblong + a*a) * np.sin(θ) * np.cos(φ)
+        y = np.sqrt(r_ext_oblong*r_ext_oblong + a*a) * np.sin(θ) * np.sin(φ)
+        z = r_ext_oblong * np.cos(θ)
+        plotter.add_custom_surface(x, y, z)
 
-    if save_pdf:   plot.save_plot(orbit_pdf_name)
-    if save_mp4:   plot.save_animation(orbit_mp4_name)
-    if v_save_pdf: plot.save_plot_velocity(velocity_pdf_name)
+    if save_pdf:   plotter.save_plot(orbit_pdf_name)
+    if save_mp4:   plotter.save_animation(orbit_mp4_name)
+    if v_save_pdf: plotter.save_plot_velocity(velocity_pdf_name)
 
     plotter.show()
     return body

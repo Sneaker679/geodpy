@@ -7,6 +7,7 @@ import matplotlib.animation as animation
 import numpy as np
 
 from abc import ABCMeta, abstractmethod
+from copy import deepcopy
 
 # Possible symbols
 #τ,t,r,a,b,c,θ,φ,η,ψ,x,y 
@@ -92,9 +93,6 @@ class BodyPlotter(metaclass=ABCMeta):
     def show(self) -> None:
         plt.show()
 
-    def add_custom_surface(self):
-        raise NotImplementedError
-
     def clear_plots(self) -> None:
         self.fig = self.fig_ani = self.ax = self.ax_ani, self.fig_vel, self.ax_vel = None
 
@@ -113,8 +111,19 @@ class BodyPlotter(metaclass=ABCMeta):
 # Class that facilitates the plotting of 2D Body objects.
 class BodyPlotter2D(BodyPlotter):
 
+    def add_custom_patches(*argv) -> None:
+        for patch in argv:
+            patch_ani = deepcopy(patch)
+
+            if self.fig is not None:
+                patch.set(transform=self.ax.transData._b)
+                self.ax.add_patch(patch)
+
+            if self.fig_ani is not None:
+                patch_ani.set(transform=self.ax_ani.transData._b)
+                self.ax_ani.add_patch(patch_ani)
+
     def add_circle(self, center: tuple[float, float], radius: float, edgecolor: str, facecolor: str = None, fill: bool = True) -> None:
-        from copy import deepcopy
 
         circle = patches.Circle(center, radius, edgecolor=edgecolor, fill=fill, facecolor=facecolor)
         circle_ani = deepcopy(circle)
@@ -132,13 +141,16 @@ class BodyPlotter2D(BodyPlotter):
 # Class that facilitates the plotting of 3D Body objects.
 class BodyPlotter3D(BodyPlotter):
 
-    def add_sphere(self, center: tuple[float, float], radius: float, facecolor: str) -> None:
-        θ, φ = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
-        x = radius * np.sin(θ) * np.cos(φ)
-        y = radius * np.sin(θ) * np.sin(φ)
-        z = radius * np.cos(θ)
+    def add_custom_surface(self, x: np.array, y: np.array, z: np.array, facecolor: str = 'k') -> None:
         if self.fig is not None: self.ax.plot_surface(x, y, z, color=facecolor, zorder=1)
         if self.fig_ani is not None: self.ax_ani.plot_surface(x, y, z, color=facecolor, zorder=1)
+
+    def add_sphere(self, center: tuple[float, float], radius: float, facecolor: str) -> None:
+        θ, φ = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
+        x = radius * np.sin(θ) * np.cos(φ) + center[0]
+        y = radius * np.sin(θ) * np.sin(φ) + center[1]
+        z = radius * np.cos(θ) + center[2]
+        add_custom_surface(x, y, z)
 
 
 ### CartesianPlot2D class ###
@@ -181,9 +193,9 @@ class CartesianPlot2D(BodyPlotter2D, BodyPlotter):
 class CartesianPlot3D(BodyPlotter3D, BodyPlotter):
 
     def plot(self, title: str) -> None:
-        self.fig, self.ax = plt.subplots(subplot_kw={"projection":"3d", "compute_zorder": False})
+        self.fig, self.ax = plt.subplots(subplot_kw={"projection":"3d", "computed_zorder": False})
         border = np.max(self.body.pos[1:3]) * 1.2
-        self.ax.plot(self.body.pos[1], self.body.pos[2], self.body.pos[3], zorder=0)
+        self.ax.plot(self.body.pos[1], self.body.pos[2], self.body.pos[3])
         self.ax.set_xlim(-border, border)
         self.ax.set_ylim(-border, border)
         self.ax.set_zlim(-border, border)
@@ -193,7 +205,7 @@ class CartesianPlot3D(BodyPlotter3D, BodyPlotter):
 
     # Animation plotting methods
     def animate(self, frame_interval: int = 20) -> None:
-        self.fig_ani, self.ax_ani = plt.subplots(subplot_kw={"projection":"3d", "compute_zorder": False})
+        self.fig_ani, self.ax_ani = plt.subplots(subplot_kw={"projection":"3d", "computed_zorder": False})
         border = np.max(self.body.pos[1:4]) * 1.2
         line = self.ax_ani.plot(self.body.pos[1], self.body.pos[2], self.body.pos[3])[0]
         self.ax_ani.set_xlim(-border, border)

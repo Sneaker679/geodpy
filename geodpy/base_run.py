@@ -1,7 +1,6 @@
 from .geodesics import Geodesics
 from .body import Body
 from .coordinates import Coordinates
-from .bodyplotter import BodyPlotter
 
 from sympy import *
 import matplotlib.patches as patches
