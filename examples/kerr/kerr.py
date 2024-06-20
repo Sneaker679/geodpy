@@ -24,9 +24,9 @@ def radii_polar(rs: float, a: float) -> tuple[float, float]:
     r_ext, r_int = radii(rs, a)
     return OblongEllipsoid.to_spherical(np.array([[0,0], [r_ext,r_int], [np.pi/2,np.pi/2], [0,0]]), a=a)[1]
 
-def ergosphere_radius_oblong(rs: float, a: float, θ: float) -> float:
+def ergosphere_radius_polar(rs: float, a: float, θ: float) -> float:
     ergo = rs/2 + np.sqrt(rs*rs/4 - a*a*np.cos(θ))
-    return OblongEllipsoid.to_spherical(np.array([[0], [ergo], [np.pi/2], [0]]), a=a)[1]
+    return OblongEllipsoid.to_spherical(np.array([[0], [ergo], [np.pi/2], [0]]), a=a)[1][0]
 
 def contravariant_tdot(r: float, rs: float, a: float, k: float, h: float) -> float:
     Δ = r*r + a*a - r*rs
@@ -53,7 +53,7 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
 
     r_ext_oblong, r_int_oblong = radii(rs, a) 
     r_ext, r_int = radii_polar(rs, a) 
-    ergo = ergosphere_radius_oblong(rs, a, θ_init)
+    ergo = ergosphere_radius_polar(rs, a, θ_init)
 
     if verbose == 1: print(f"h={h}, k={k}, a={a}, r_ext={r_ext}, r_int={r_int}, ergosphere_radius={ergo}")
 
@@ -132,8 +132,12 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
         z = r_ext_oblong * np.cos(θ)
         plotter.add_custom_surface(x, y, z)
 
+    plotter.ax_ani.set_xlim(-1.2,1.2)
+    plotter.ax_ani.set_ylim(-1.2,1.2)
+    plotter.ax_ani.set_zlim(-1.2,1.2)
+
     if save_pdf:   plotter.save_plot(orbit_pdf_name)
-    if save_mp4:   plotter.save_animation(orbit_mp4_name)
+    if save_mp4:   plotter.save_animation(orbit_mp4_name, dpi=300)
     if v_save_pdf: plotter.save_plot_velocity(velocity_pdf_name)
 
     plotter.show()

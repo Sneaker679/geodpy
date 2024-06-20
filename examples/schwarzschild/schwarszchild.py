@@ -80,9 +80,9 @@ def schwarzschild(rs: float, ro: float, h: float, k: float, T: float|None = None
 
     plotter.add_circle((0,0), rs, edgecolor="k", fill=True, facecolor='k')
 
-    if save_pdf:   plot.save_plot(orbit_pdf_name)
-    if save_mp4:   plot.save_animation(orbit_mp4_name)
-    if v_save_pdf: plot.save_plot_velocity(velocity_pdf_name)
+    if save_pdf:   plotter.save_plot(orbit_pdf_name)
+    if save_mp4:   plotter.save_animation(orbit_mp4_name)
+    if v_save_pdf: plotter.save_plot_velocity(velocity_pdf_name)
 
     plotter.show()
     return body

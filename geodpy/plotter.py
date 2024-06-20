@@ -64,10 +64,10 @@ class BodyPlotter(metaclass=ABCMeta):
 
         return title
 
-    def save_animation(self, file_name: str = "body") -> None:
+    def save_animation(self, file_name: str = "body", dpi=100) -> None:
         if file_name[-4:-1] != ".mp4":
             file_name.join(".mp4")
-        self.ani.save(file_name)
+        self.ani.save(file_name, dpi=dpi)
 
 
     # Velocity plot methods
@@ -146,7 +146,7 @@ class BodyPlotter3D(BodyPlotter):
         if self.fig_ani is not None: self.ax_ani.plot_surface(x, y, z, color=facecolor, zorder=1)
 
     def add_sphere(self, center: tuple[float, float], radius: float, facecolor: str) -> None:
-        θ, φ = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
+        θ, φ = np.mgrid[0:2*np.pi:40j, 0:np.pi:20j]
         x = radius * np.sin(θ) * np.cos(φ) + center[0]
         y = radius * np.sin(θ) * np.sin(φ) + center[1]
         z = radius * np.cos(θ) + center[2]
@@ -167,7 +167,7 @@ class CartesianPlot2D(BodyPlotter2D, BodyPlotter):
         self.ax.set_title(title)
 
     def animate(self, frame_interval: int = 20) -> None:
-        self.fig_ani, self.ax_ani = plt.subplots()
+        self.fig_ani, self.ax_ani = plt.subplots(figsize=(16, 9), dpi=1920/16)
         border = np.max(self.body.pos[1:4]) * 1.2
         line = self.ax_ani.plot(self.body.pos[1], self.body.pos[2])[0]
         self.ax_ani.set_xlim(-border, border)
