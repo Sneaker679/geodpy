@@ -2,3 +2,4 @@
 examples/notes
 **/__pycache__
 venv
+geodpy/tags

@@ -12,8 +12,8 @@ class Geodesics:
         assert gₘₖ.shape[0] == len(coordinates.coords)
         
         # Automatic calculation of all geodesics variables
-        self._gₘₖ= gₘₖ
         self._coordinates = coordinates
+        self._gₘₖ= gₘₖ
         self._dₛuᵏ= self.__contravariant_acc()
         self._dₛuᵏ_lambda = vector_to_lambda(coordinates, self._dₛuᵏ)
 

@@ -1,4 +1,4 @@
-# darkMatter
+# geodpy
 This code aims to facilitate research on dark matter by simulating any geodesics given a metric specified by the user and some initial conditions.
 
 ## Requirements
@@ -15,9 +15,7 @@ export PYTHONPATH="${PYTHONPATH}:/path/to/darkMatter/"
 or simply run it once, directly in the terminal for single use cases.
 
 ## Basic Usage
-In the `examples` folder are some examples with many metrics, including the Schwarzschild, Kerr and Schwarzschild de Sitter metric. To simplify this break down of the code, I shall refer these metrics simply as `metric`. Inside the `metric` fodlers are many different configurations for testing purposes. The script `metric.py` is responsible for actually running the code given certain parameters. The other `auxiliary.py` files are specific configurations that call the functionalities `metric.py`. If you open these auxiliary files, you will will see a very short script with some parameters that you can modify to produce different geodesic results.
-
-To run the configuration, simply run the script : `python3 auxiliary.py`. More details on the actual meaning of the parameters are given in the `README.md` of each `metric` example folders.
+In the `examples` folder are many examples that simulate geodesics with varied metrics, including the Schwarzschild, Kerr and Schwarzschild de Sitter metric. All these folders work in the same way. Thus, for the sake of being straightforward, I shall present only one example with the Schwarzschild metric. Inside the `schwarzschild` folder are many files, the main one being `schwarzschild.py`. This file contains the bulk of the code specific to running a schwarzchild metric calculation. Inside this code, there is a `schwarzschild()` function, which you can call with varying parameters to generate different geodesics. The other files in the `schwarzschild` folder are simple sripts who call the `schwarzschild()` function with different initial values. For instance, the `near_horizon.py` script yields a geodesic simulated near the event horizon of a non rotating Schwarzschild blackhole. Running this script using `python3 near_horizon.py` will run the entire calculation and plotting code with no extra steps needed. You can run the other examples the same way. The README inside each example folders specifies the meaning of the constants and quantities used. 
 
 ## Advanced Usage
 Seeing as you have added the project folder to your python path, you can call the classes and functions of this code from any location in your computer. Once you have established a workspace, create an empty scrip and start coding!
@@ -25,7 +23,7 @@ Seeing as you have added the project folder to your python path, you can call th
 The basic strategy to yield results is described below.
 
 #### 0. Hold on!
-Before continuing with this section, if you wish for *more control* over your calculation than the previous section but *less bloat* to code than what follows, I suggest you look at the `geodpy.basic` function, which automates a good portion of the calculation. However, this is entirely optionnal as this function is merely a wrapper for the later steps of the following procedure. If you want to do this approach, complete steps 1 and 2, and intialize the dictionnary in step 4, then feed the variables you have made along the way to the `basic` function. See `basic.py` for the arguments you need to input.
+Before continuing with this section, if you wish for *more control* over your calculation than the previous section but *less bloat* to code than what follows, I suggest you look at the `geodpy.basic` function, which automates a good portion of the calculation. However, this is entirely optionnal as this function is merely a wrapper for the later steps of the current section. If you want to do this approach, complete steps 1 and 2, and intialize the dictionnary in step 4, then feed the variables you have made along the way to the `basic` function. See `basic.py` for the arguments you need to input.
 
 #### 1. Establish your coordinate system
 If you venture in `geodpy/coordinates.py`, you will see that some coordinate systems have already been defined for easy use. If you wish to have more specific coordinates system, you will need to create your own class that implements the `Coordinates` abstract class located in the same file. I suggest you copy/paste an already implemented class and modify it to your needs. Note that the `to_cartesian` method is optionnal if you do not intend to plot your data using the project's plotting tools.
@@ -57,14 +55,14 @@ solver_kwargs = {
     "events"       : None,              
 }
 ```
-You can simpy unpack this in as function parameters. Upon running, the code will solve the differential equation system established by the `Geodesics` object.
+You can simpy unpack this as function parameters. Upon running, the code will solve the differential equation system established by the `Geodesics` object.
 
 You can also calculate the norm of the velocity vector for each point using the `calculate_velocities` method of the `Body` object. The results will be store in the `body.vel_norm` class attribute.
 
 #### 5. Plot your data
 The results are stored in the `body.pos` and `body.vel` class attributes. However, the raw results, directly given by `solve_ivp` are stored in the `body.solver_result` class attribute, should you need them. As you may have guessed, `body.pos` and `body.vel` are respectively the position and velocity vectors of your body following the geodesic. To get the proper time (also known as the "interval") for each point, call `body.s`.
 
-This project can also plot your data automatically and according to your coordinate system. To do this, import `BodyPlotter` from `geodpy`. Create a `BodyPlotter` object by feeding the constructor your `Body` object. The class offers the following methods:
+This project can also plot your data automatically and according to your coordinate system. To do this, import one of the non-abstract plotter classes located in `geodpy/plotter.py` and instantiate it. The object will offer the following methods originating the abstract class `BodyPlotter`:
 ```python
 plot(title: str)
 save_plot(file_name: str)
@@ -75,13 +73,18 @@ save_animation(file_name: str)
 plot_velocity(title: str)
 save_velocity(file_name: str)
 
-set_patches(patches: list[matplotlib.patches]) # Add matplotlib patches to your graphs
 show() # Shows all plots created up to now
 ```
-If you get a `NotImplementedError`, it may be because your coordinate system is not yet implemented or is not supported. This is where your Coordinate class `to_cartesian` comes into play. You won't need to call it directly however. In your script, run:
+In case you are working in a coordinate system that is NOT spherical or cartesian, then it is unsupported by geodpy for plotting. However, if you have correctly defined your Coordinate class from earlier, you may be able to convert your final results to cartesian or spherical coordinates. To do this, simply run:
 ```
 cartesian_body = body.get_cartesian_body(**kwargs)
+spherical_body = body.get_spherical_body(**kwargs)
 ```
-which will create another body object with the correct position and velocity vectors in cartesian coordinates. The kwargs comes from your `get_cartesian` method, which may need additionnal parameters depending on your coordinate system. You can then use `cartesian_body` to plot your data with the `BodyPlotter` object.
+which will create another body object with the correct position and velocity vectors in cartesian or spherical coordinates. The kwargs are the arguments of the `get_cartesian` or `get_spherical` methods from the Coordinates object. Indeed, transformation into another coordinate system may require additionnal parameters. You can then use `cartesian_body` or `spherical_body` to plot your data with your plotter object.
+
+Depending on if you are using a 3D plotter or a 2D plotter, you have different methods available to add additionnal figures to the plot. For instance, you could add a black circle, representing a blackhole, if you wish. More info on these methods are provided in geodpy/README.md.
+
+## Interface
+If you wish to see a more detailed overview of all the classes and functions at your disposition, be sure to checkout the `README.md` located in the `geodpy` source code folder.
 
 

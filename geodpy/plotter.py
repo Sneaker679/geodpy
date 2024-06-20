@@ -1,4 +1,4 @@
-from geodpy.body import Body
+from .body import Body
 
 from sympy import *
 import matplotlib.pyplot as plt

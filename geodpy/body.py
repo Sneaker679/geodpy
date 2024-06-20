@@ -34,7 +34,7 @@ class Body:
         atol: float = 1e-8,
         rtol: float = 1e-8,
         events: Callable = None,
-    ) -> bool:
+    ) -> np.array:
 
         self.solver_result = solve_ivp(
             fun = Body.__diff_equations_system,
@@ -53,7 +53,7 @@ class Body:
         self.pos = self.solver_result.y[0:4]
         self.vel = self.solver_result.y[4:8]
 
-        return self.solver_result.status == 0
+        return self.s, self.pos, self.vel
 
     # Function solved with scipy.integrate.solve_ivp
     @staticmethod
@@ -69,7 +69,7 @@ class Body:
 
     # Calculates the norm of the velocity vector for each points as a function of coordinate time.
     # This function assumes that self.pos[0] is time.
-    def calculate_velocities(self) -> None:
+    def calculate_velocities(self) -> np.array:
         velocity_equation = self._coordinates.velocity_equation
 
         # Defining the arguments for the lambda velocity equation
@@ -92,6 +92,7 @@ class Body:
             args.append(np.gradient(args[coord],t))
 
         self.vel_norm = velocity2_equation_lambda(*args)**(1/2) # Taking square root to undo the square of earlier.
+        return self.vel_norm
 
     # Creates a new Body object from the current body, but represented in cartesian coordinates.
     def get_cartesian_body(self, **kwargs):
