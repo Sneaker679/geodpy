@@ -9,9 +9,9 @@ h = 14_857_341
 
 output_kwargs = {
     "orbit_plot_title" : "Elliptical orbit of Earth",
-    "orbit_pdf_name"   : "outputs/o_earth_ellipse.pdf",
-    "orbit_mp4_name"   : "outputs/o_earth_ellipse.mp4",
-    "velocity_pdf_name": "outputs/v_earth_ellipse.pdf",
+    "orbit_pdf_name"   : "o_earth_ellipse.pdf",
+    "orbit_mp4_name"   : "o_earth_ellipse.mp4",
+    "velocity_pdf_name": "v_earth_ellipse.pdf",
     "plot_orbit"       : True,
     "animate"          : True,
     "plot_velocity"    : True,

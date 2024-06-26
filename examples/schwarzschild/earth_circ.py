@@ -8,9 +8,9 @@ k, h = kcirc(rs, ro), hcirc(rs, ro)
 
 output_kwargs = {
     "orbit_plot_title" : "Circular orbit of Earth",
-    "orbit_pdf_name"   : "outputs/o_earth_circ.pdf",
-    "orbit_mp4_name"   : "outputs/o_earth_circ.mp4",
-    "velocity_pdf_name": "outputs/v_earth_circ.pdf",
+    "orbit_pdf_name"   : "o_earth_circ.pdf",
+    "orbit_mp4_name"   : "o_earth_circ.mp4",
+    "velocity_pdf_name": "v_earth_circ.pdf",
     "plot_orbit"       : True,
     "animate"          : True,
     "plot_velocity"    : False,

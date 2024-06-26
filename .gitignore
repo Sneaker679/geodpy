@@ -1,4 +1,5 @@
-**/outputs/*
+**/outputs/*.mp4
+**/outputs/*.pdf
 examples/notes
 **/__pycache__
 venv

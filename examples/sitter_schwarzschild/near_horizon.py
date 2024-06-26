@@ -10,9 +10,9 @@ h -= 0.1
 
 output_kwargs = {
     "orbit_plot_title" : "Trajectory of a star orbiting a blackhole",
-    "orbit_pdf_name"   : "outputs/o_schwarzschild.pdf",
-    "orbit_mp4_name"   : "outputs/o_schwarzschild.mp4",
-    "velocity_pdf_name": "outputs/v_schwarzschild.pdf",
+    "orbit_pdf_name"   : "o_schwarzschild.pdf",
+    "orbit_mp4_name"   : "o_schwarzschild.mp4",
+    "velocity_pdf_name": "v_schwarzschild.pdf",
     "plot_orbit"       : True,
     "animate"          : True,
     "plot_velocity"    : True,

@@ -5,3 +5,9 @@ PARAMETERS DEFINITION:
 - σ  -> direction of the orbit : 1 means co-rotation and -1 means counter-rotation;
 - h  -> initial angular momentum;
 - k  -> initial energy or, more specifically, (total energy)/(mc^2).
+
+To run a calculation, use the python command on any of the files except `kerr.py`. For example:
+```bash
+python3 sucked_in_2D.py
+```
+will produce plots showing the geodesic of a body plunging in a rotating blackhole.

@@ -5,9 +5,12 @@ import matplotlib.animation as animation
 import matplotlib.patches as patches
 import numpy as np
 
+import os
+
 # Possible symbols
 #τ,t,r,a,b,c,θ,φ,η,ψ,x,y 
 
+# Returns the values of h and k for a circular orbit
 def circ(rs: float, r: float, a: float, σ: int) -> tuple[float,float]:
     assert a <= rs/2 
     rot_term = σ*a*np.sqrt(rs/(2*r*r*r))
@@ -16,18 +19,22 @@ def circ(rs: float, r: float, a: float, σ: int) -> tuple[float,float]:
     den = np.sqrt( 1 - 1.5*rs/r + 2*rot_term )
     return num_k/den, σ*np.sqrt(r*rs/2)*num_h/den # k, h
     
+# Returns internal and external horizons of the rotating blackhole
 def radii(rs: float, a: float) -> tuple[float, float]:
     assert a <= rs/2 
     return 1/2 * (rs + np.sqrt(rs*rs - 4*a*a)), 1/2 * (rs - np.sqrt(rs*rs - 4*a*a))
 
+# Returns internal and external horizons of the rotating blackhole in polar coordinates (for plotting).
 def radii_polar(rs: float, a: float) -> tuple[float, float]:
     r_ext, r_int = radii(rs, a)
     return OblongEllipsoid.to_spherical(np.array([[0,0], [r_ext,r_int], [np.pi/2,np.pi/2], [0,0]]), a=a)[1]
 
+# Returns the ergosphere radius in polar (for plotting).
 def ergosphere_radius_polar(rs: float, a: float, θ: float) -> float:
     ergo = rs/2 + np.sqrt(rs*rs/4 - a*a*np.cos(θ))
     return OblongEllipsoid.to_spherical(np.array([[0], [ergo], [np.pi/2], [0]]), a=a)[1][0]
 
+# Initial values
 def contravariant_tdot(r: float, rs: float, a: float, k: float, h: float) -> float:
     Δ = r*r + a*a - r*rs
     return 1/Δ * ((r*r + a*a + a*a*rs/r)*k - a*rs*h/r)
@@ -42,6 +49,7 @@ def contravariant_rdot2(r: float, rs: float, a: float, k: float, h: float) -> fl
 def contravariant_phidot(r: float, rs: float, a: float, k: float, h: float) -> float:
         return 1/(r*r + a*a - r*rs) * (a*rs*k/r + (1 - rs/r)*h)
 
+# Kerr example function
 def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np.pi/2, T: float|None = None, output_kwargs: dict = {}, verbose: int = 1, dim: int = 2) -> None:
     # Initial values
     dₛt = contravariant_tdot(ro, rs, a, k, h)
@@ -93,9 +101,9 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
 
     # Output options
     orbit_plot_title:  str  = output_kwargs.get("orbit_plot_title" , "Trajectory of a star orbiting a rotating blackhole")
-    orbit_pdf_name:    str  = output_kwargs.get("orbit_pdf_name"   , "outputs/o_kerr.pdf")
-    orbit_mp4_name:    str  = output_kwargs.get("orbit_mp4_name"   , "outputs/o_kerr.mp4")
-    velocity_pdf_name: str  = output_kwargs.get("velocity_pdf_name", "outputs/v_kerr.pdf") 
+    orbit_pdf_name:    str  = output_kwargs.get("orbit_pdf_name"   , "o_kerr.pdf")
+    orbit_mp4_name:    str  = output_kwargs.get("orbit_mp4_name"   , "o_kerr.mp4")
+    velocity_pdf_name: str  = output_kwargs.get("velocity_pdf_name", "v_kerr.pdf") 
     plot_orbit:        bool = output_kwargs.get("plot_orbit"       , True         )
     animate:           bool = output_kwargs.get("animate"          , False        )
     plot_velocity:     bool = output_kwargs.get("plot_velocity"    , False        )
@@ -121,6 +129,7 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
         body.calculate_velocities()
         plotter.plot_velocity("Velocity")
 
+    # Drawing blackhole (inner/external horizons and ergosphere for 2D, external horizon for 3D)
     if dim == 2:
         plotter.add_circle((0,0), r_ext, edgecolor="k", fill=True, facecolor='k')
         plotter.add_circle((0,0), r_int, edgecolor="c", fill=True, facecolor='b')
@@ -132,13 +141,22 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
         z = r_ext_oblong * np.cos(θ)
         plotter.add_custom_surface(x, y, z)
 
-    plotter.ax_ani.set_xlim(-1.2,1.2)
-    plotter.ax_ani.set_ylim(-1.2,1.2)
-    plotter.ax_ani.set_zlim(-1.2,1.2)
+    # Create outputs directory if doesn't exist.
+    if not os.path.exists("outputs"):
+        os.makedirs("outputs")
 
+    # Save plots
     if save_pdf:   plotter.save_plot(orbit_pdf_name)
     if save_mp4:   plotter.save_animation(orbit_mp4_name, dpi=300)
     if v_save_pdf: plotter.save_plot_velocity(velocity_pdf_name)
 
     plotter.show()
     return body
+
+
+def main():
+    print("WARNING -> This file is meant to be used as a module for the other files in this directory. By itself, no calculations are done. To compute the geodesics of this metric with given initial parameters, run the other files in this directory.")
+    print("Exiting.")
+
+if __name__ == "__main__":
+    main()
