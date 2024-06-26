@@ -8,7 +8,7 @@ This code aims to facilitate research on dark matter by simulating any geodesics
 - numpy
 
 ## Installation
-Clone the repository with and go to the main folder `geodpy_lib`. You can use these commands:
+Clone the repository and go to the main folder `geodpy_lib`. You can use these commands:
 ```bash
 git clone https://github.com/Sneaker679/geodpy_lib
 cd geodpy_lib
