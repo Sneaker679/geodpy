@@ -26,8 +26,7 @@ class Geodesics:
         for j, coord in enumerate(self._coordinates.coords):
             dₛuⱼ.append(1/2 * tensorcontraction(tensorproduct(self._gₘₖ.diff(coord), uᵐuᵏ), (0,1,2,3)))
         
-        dₛuⱼ= Array(dₛuⱼ)
-        return dₛuⱼ
+        return Array(dₛuⱼ)
 
     # Geodesic contravariant equation : ∂ₛuᵏ = gᵐᵏ(∂ₛuₘ - ∂ₛgₘⱼuʲ) where uᵏ = ∂ₛxᵏ
     def __contravariant_acc(self) -> Array:

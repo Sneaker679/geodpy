@@ -1,4 +1,6 @@
-from geodpy import Geodesics, Body, basic, PolarPlot, CartesianPlot2D, Spherical
+from geodpy import Geodesics, Body, basic
+from geodpy.plotters import PolarPlot, CartesianPlot2D
+from geodpy.coordinates import Spherical
 
 from sympy import *
 import matplotlib.animation as animation

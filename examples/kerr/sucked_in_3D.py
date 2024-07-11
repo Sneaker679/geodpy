@@ -23,4 +23,4 @@ output_kwargs = {
     "v_save_pdf"       : False  
 }
 
-kerr(rs=rs, ro=ro, h=h, k=k, a=a, θ_init=np.pi/3, T=600, output_kwargs=output_kwargs, verbose=1, dim=3)
+kerr(rs=rs, ro=ro, h=h, k=k, a=a, θ_init=np.pi/3, T=600, output_kwargs=output_kwargs, verbose=2, dim=3)

@@ -1,5 +1,5 @@
 from geodpy import Geodesics, Body, basic
-from geodpy.plotters import PolarPlot
+from geodpy.plotters import PolarPlot, CartesianPlot2D
 from geodpy.coordinates import Spherical
 
 from sympy import *
@@ -12,38 +12,31 @@ import os
 # Possible symbols
 #τ,t,r,a,b,c,θ,φ,η,ψ,x,y 
 
-# Returns the velocity a body should have on a circular orbit. Used for comparaisons. Not used in this file.
-def velocity_circ(rs, r, Λ=1.11e-52):
-    return np.sqrt((rs - 2*Λ*r*r*r/3)/(2*r-3*rs))
+def hcirc(r: float, α: float = 10e-6):
+    return r * np.sqrt(α/(1 + α*(np.log(r) - 1)))
 
-# Returns k for a circular orbit
-def kcirc(rs, r, Λ=1.11e-52) -> float:
-    return (1-rs/r-Λ*r*r/3)/np.sqrt(1-3*rs/(2*r))
+def kcirc(r: float, α: float = 10e-6):
+    return ((1 + α * np.log(r))**(3/2)) / (1 + α * (np.log(r) - 1))
 
-# Returns h for a circular orbit
-def hcirc(rs, r, Λ=1.11e-52) -> float:
-    return np.sqrt((rs/(2*r*r*r) - Λ/3)/((1/(r*r*r*r))*(1-3*rs/(2*r))))
-
-# Sitter Schwarzschild example function
-def sitter_schwarzschild(rs: float, ro: float, h: float, k: float, Λ: float = 1.11e-52, T: float|None = None, output_kwargs: dict = {}, verbose: int = 1) -> Body:
+# Lieu example function
+def lieu(ro: float, h: float, k: float, α: float = 10e-6, T: float|None = None, output_kwargs: dict = {}, verbose: int = 1) -> Body:
     # Initial values
     pos = [0, ro, np.pi/2, 0]
-    vel = [k/(1-rs/ro), 0, 0, h/(ro**2)]
-    if verbose == 1: print(f"h={h}, k={k}, Λ={Λ}")
+    vel = [k/((1+α*np.log(ro)**2)), 0, 0, h/(ro**2)]
 
     # Metric config
     coordinates = Spherical
     t, r, θ, φ = Spherical.coords
 
     gₘₖ = Matrix([
-        [1-rs/r - Λ*r*r/3 ,0                    ,0          ,0                ],
-        [0                ,1/(Λ*r*r/3 + rs/r-1) ,0          ,0                ],
-        [0                ,0                    ,-r**2      ,0                ],
-        [0                ,0                    ,0          ,-r**2 * sin(θ)**2]
+        [(1 + α*ln(r))**2,0          ,0          ,0          ],
+        [0               ,-(1 + α)**2,0          ,0          ],
+        [0               ,0          ,-r**2      ,0          ],
+        [0               ,0          ,0          ,-r**2 * sin(θ)**2]
     ])
 
     # Solver config
-    if T is None: T = 2*np.pi/np.sqrt(rs/(2*ro*ro*ro) - Λ/3)
+    if T is None: T = 2 * np.pi * ro /(np.sqrt(α) * np.sqrt(1 + α * np.log(ro))) # Third law of Kepler
     solver_kwargs = {
         "time_interval": (0,T),           
         "method"       : "Radau",          
@@ -65,10 +58,10 @@ def sitter_schwarzschild(rs: float, ro: float, h: float, k: float, Λ: float = 1
     body = basic(**args_basic)
 
     # Output options
-    orbit_plot_title:  str  = output_kwargs.get("orbit_plot_title" , "Trajectory of a star orbiting a blackhole")
-    orbit_pdf_name:    str  = output_kwargs.get("orbit_pdf_name"   , "o_schwarzschild.pdf")
-    orbit_mp4_name:    str  = output_kwargs.get("orbit_mp4_name"   , "o_schwarzschild.mp4")
-    velocity_pdf_name: str  = output_kwargs.get("velocity_pdf_name", "v_schwarzschild.pdf") 
+    orbit_plot_title:  str  = output_kwargs.get("orbit_plot_title" , "Trajectory of a star orbitting a galaxy.")
+    orbit_pdf_name:    str  = output_kwargs.get("orbit_pdf_name"   , "o_lieu.pdf")
+    orbit_mp4_name:    str  = output_kwargs.get("orbit_mp4_name"   , "o_lieu.mp4")
+    velocity_pdf_name: str  = output_kwargs.get("velocity_pdf_name", "v_lieu.pdf") 
     plot_orbit:        bool = output_kwargs.get("plot_orbit"       , True         )
     animate:           bool = output_kwargs.get("animate"          , False        )
     plot_velocity:     bool = output_kwargs.get("plot_velocity"    , False        )
@@ -87,9 +80,6 @@ def sitter_schwarzschild(rs: float, ro: float, h: float, k: float, Λ: float = 1
     if plot_velocity:
         body.calculate_velocities()
         plotter.plot_velocity("Velocity")
-
-    # Drawing blackhole
-    plotter.add_circle((0,0), rs, edgecolor="k", fill=True, facecolor='k')
 
     # Create outputs directory if doesn't exist.
     if not os.path.exists("outputs"):

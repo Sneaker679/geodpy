@@ -14,7 +14,7 @@ output_kwargs = {
     "velocity_pdf_name": "v_earth_ellipse.pdf",
     "plot_orbit"       : True,
     "animate"          : True,
-    "plot_velocity"    : True,
+    "plot_velocity"    : False,
     "save_pdf"         : False,
     "save_mp4"         : False,
     "v_save_pdf"       : False  
