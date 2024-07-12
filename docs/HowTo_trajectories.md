@@ -3,14 +3,16 @@
 - `Geodesics`, `Body`.
 
 `geodpy` functions:
-- `expr_to_lambda`, `vector_to_lambda`.
+- `expr_to_lambda`, `vector_to_lambda`, `basic`.
 
-Importable via &rarr `from geodpy import *`.
+Importable via: `from geodpy import *`.
 
 ## Description
 This is the most important of the *HowTo*s as we tacke the main purpose of this library - calculating trajectories of bodies in a given arbitrary metric. The 2 core objects are `Geodesics` and `Body`, who handle respectively the calculation of the symbolic geodesics and the calculation of the trajectories given the geodesics. All the results are stored in the attributes of these objects, such as all the points of a trajectory.
 
-## Example
+In this file are 2 ways to calculate the trajectories. The first one starts in the next section, and later you can find another section detailing how to use the function `basic()`.
+
+## Example without `basic()`
 The main workflow for calculating trajectories looks like this:
 - Defining the coordinate system and the metric;
 - Calculating the symbolic geodesics from the metric;
@@ -52,7 +54,7 @@ gₘₖ = Matrix([
 ```
 This is the Kerr metric in oblong ellipsoid coordinates. In this particular example, "rs" and "a" are constants corresponding respectively to the Schwarzschild radius of the blackhole and its rotating speed. For physical reasons, a <= rs/2 must be true. 
 
-## Calculating Geodesics
+### Calculating Geodesics
 To calculate the geodesics, initialize a `Geodesics` object and feed it the metric and the coordinate system, like this:
 ```python
 from geodpy import Geodesics
@@ -62,7 +64,7 @@ geodesics = Geodesics(OblongEllipsoid, gₘₖ)
 
 The constructor of the object will automatically start computing the symbolic geodesics equations, as well as these equations as lambda expressions for later solving. Here, the geodesics equations are calculated using `∂ₛuᵏ = gᵐᵏ(∂ₛuₘ - ∂ₛgₘⱼuʲ)` where `uᵏ = ∂ₛxᵏ`, `∂ₛuⱼ = 1/2 * ∂ⱼ(gₘₖ) * uᵐ uᵏ` and `xᵏ` is a coordinate. Only the right side of the equation is stored and made into a lambda expression.
 
-## Calculating the trajectory
+### Calculating the trajectory
 Calculating trajectories require the use of a `Body` object. A body object is instantiated like so:
 ```python
 initial_position = [..., ..., ..., ...]
@@ -98,7 +100,7 @@ which can also be accessed like this once the method has been ran at least once:
 vel_norm = body.vel_norm
 ```
 
-## Converting the points to cartesian or spherical coordinates
+### Converting the points to cartesian or spherical coordinates
 To convert a body expressed in an arbitrary coordinate system to a cartesian or spherical system, you can use:
 ```python
 cartesian_body = body.get_cartesian_body(a=0.2)
@@ -109,3 +111,59 @@ These methods create new `Body` objects where the "pos" and "vel" attributes hav
 Also notice that these methods require the specification of the "a" parameter. This is because the `OblongEllipsoid` coordinate system is parametrized by "a", which corresponds in this case to the rotation speed of the blackhole. Other metrics may not need such parameters, in other words, the parameters of `get_x_body()` is metric dependant. See `HowTo_coordinates.md` for more information.
 
 These new objects can now be used for plotting using the plotting functionalities of this library. Before the conversion, it was impossible to do so. Refer to `HowTo_plotters.md` to plot your body.
+
+## Example with `basic()`
+The function `basic()` basically condenses most of the previous step into one function. It is not necessary to use it per se, but it *might* be easier. In this example, we are still using the Kerr metric.
+
+The `basic()` function returns a body with its trajectory already calculated. You can then plot it using the aforementionned steps. To use it, initialize the necessary parameters:
+```python
+from geodpy.coordinates import OblongEllipsoid
+from sympy import *
+
+rs = 1
+a  = 0.2
+
+# PARAM 1
+coordinates = OblongEllipsoid
+
+t, r, θ, φ = OblongEllipsoid.coords
+p2 = r*r + a*a*(cos(θ))**2 
+Δ = r*r + a*a - r*rs
+
+# PARAM 2
+g_mk = Matrix([
+    [1-rs*r/(p2)             ,0      ,0    ,(a*r*rs*sin(θ)**2)/(p2)                           ],
+    [0                       ,-p2/Δ  ,0    ,0                                                 ],
+    [0                       ,0      ,-p2  ,0                                                 ],
+    [(a*r*rs*sin(θ)**2)/(p2) ,0      ,0    ,-(r*r + a*a + (a*a*r*rs*sin(θ)**2)/(p2))*sin(θ)**2]
+])
+
+# PARAM 3 & 4
+initial_position = [..., ..., ..., ...]
+initial_velocity = [..., ..., ..., ...]
+
+# PARAM 5 (OPTIONAL)
+solver_kwargs = {
+    "time_interval": (0,T),           
+    "method"       : "Radau",          
+    "max_step"     : T*1e-3,
+    "atol"         : 1e-8,              
+    "rtol"         : 1e-8,              
+    "events"       : None,              
+}
+
+# PARAM 6 (OPTIONAL)
+verbose = 1    # or 2
+
+# RUN
+body = basic(cooridnates, g_mk, initial_pos, initial_vel, solver_kwargs, verbose)
+```
+
+As you can see, the function takes 6 parameters, 2 of which are optionnal as they have internal default values if left untouched. In order, it needs: the coordinate system, the metric, the initial values, the solver arguments and the amount of printing (verbose).
+
+Like it was mentionned, it yields a body with its trajectory already calculated. You can then convert the body to an appropriate coordinate system:
+```python
+cartesian_body = body.get_cartesian_body(a=0.2)
+spheric_body = body.get_spheric_body(a=0.2)
+```
+and plot either of these 2 objects using the plotters of the library. Refer to `HowTo_plotters.md` for more information.

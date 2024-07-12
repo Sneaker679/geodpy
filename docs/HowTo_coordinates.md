@@ -3,7 +3,7 @@
 - (ABSTRACT) `Coordinates`;
 - `Cartesian`, `Spheric`, `OblongEllipsoid`.
 
-Importable via &rarr `from geodpy.plotters import *`.
+Importable via: `from geodpy.plotters import *`.
 
 ## Description
 The `Coordinates` classes are responsible for handling all the coordinates in the library, including conversions between different coordinate systems. The 2 main objects using the `Coordinates` objects are `geodpy.Geodesics` and `geodpy.Body`. These are **static** classes.

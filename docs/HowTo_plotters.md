@@ -5,7 +5,7 @@
 - (2D) `CartesianPlot2D`, `PolarPlot`;
 - (3D) `CartesianPlot3D`.
 
-Importable via &rarr `from geodpy.plotters import *`.
+Importable via: `from geodpy.plotters import *`.
 
 ## Description
 These classes make it easier to plot on `matplotlib` the trajectory of `Body` objects expressed in `Cartesian` or `Spherical` coordinates.
