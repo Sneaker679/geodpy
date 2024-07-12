@@ -3,8 +3,6 @@ from geodpy.plotters import PolarPlot, CartesianPlot2D
 from geodpy.coordinates import Spherical
 
 from sympy import *
-import matplotlib.animation as animation
-import matplotlib.patches as patches
 import numpy as np
 
 import os
@@ -12,21 +10,30 @@ import os
 # Possible symbols
 #τ,t,r,a,b,c,θ,φ,η,ψ,x,y 
 
+def hcirc(M: float, r: float, r0: float = 1, ao:float = np.sqrt(1.11e-52/3)) -> float:
+    print(1-np.sqrt(M*ao)/2)
+    print(np.log(r/r0))
+    print(np.sqrt(M*ao)*np.log(r/r0))
+    return np.sqrt(np.sqrt(M*ao)/2) * r/np.sqrt(1 - np.sqrt(M*ao)/2 + np.sqrt(M*ao)*np.log(r/r0))
+
+def kcirc(M: float, r: float, r0: float = 1, ao:float = np.sqrt(1.11e-52/3)) -> float:
+    return (1 - np.sqrt(M*ao) * np.log(r/r0))/np.sqrt(1 - np.sqrt(M*ao)/2 + np.sqrt(M*ao) * np.log(r/r0))
+
 # Lieu example function
 def mond(M: float, ro: float, h: float, k: float, ao: float = np.sqrt(1.11e-52/3), T: float|None = None, output_kwargs: dict = {}, verbose: int = 1) -> Body:
     # Initial values
     pos = [0, ro, np.pi/2, 0]
-    vel = [k/(1-2*np.sqrt(M*ao)*ln(ro)), 0, 0, h/(ro**2)]
+    vel = [k/(1+np.sqrt(M*ao)*ln(ro)), 0, 0, h/(ro**2)]
 
     # Metric config
     coordinates = Spherical
     t, r, θ, φ = Spherical.coords
 
     gₘₖ = Matrix([
-        [1-2*(M*ao)**(1/2) * ln(r) ,0                      ,0          ,0          ],
-        [0                         ,-1/(1-2*(M*ao)**(1/2)) ,0          ,0          ],
-        [0                         ,0                      ,-r**2      ,0          ],
-        [0                         ,0                      ,0          ,-r**2 * sin(θ)**2]
+        [1+(M*ao)**(1/2) * ln(r) ,0                              ,0          ,0          ],
+        [0                       ,-1/(1+(M*ao)**(1/2) * ln(r))   ,0          ,0          ],
+        [0                       ,0                              ,-r**2      ,0          ],
+        [0                       ,0                              ,0          ,-r**2 * sin(θ)**2]
     ])
 
     # Solver config

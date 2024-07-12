@@ -21,12 +21,11 @@ class Coordinates(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def velocity_equation():
+    def coords_string():
         pass
 
-    @property
     @abstractmethod
-    def coords_string():
+    def velocity_equation(cls, **kwargs):
         pass
 
     @abstractmethod
@@ -47,12 +46,15 @@ class Cartesian(Coordinates):
     coords: tuple[Function]     = (Function('t')(interval), Function('x')(interval), Function('y')(interval), Function('z')(interval))
     coords_string: tuple[str]   = ('t', 'x', 'y', 'z')
     t, x, y, z                  = coords
-    velocity_equation: Function = (coords[1].diff(interval)**2 + coords[2].diff(interval)**2 + coords[3].diff(interval)**2)**(1/2)
     
-    def to_cartesian(pos: np.array, **kwargs):
+    @classmethod
+    def velocity_equation(cls, **kwargs) -> Function:
+        return (cls.x.diff(cls.interval)**2 + cls.y.diff(interval)**2 + cls.z.diff(cls.interval)**2)**(1/2)
+
+    def to_cartesian(pos: np.array, **kwargs) -> np.array:
         return pos
 
-    def to_spherical(pos: np.array, **kwargs):
+    def to_spherical(pos: np.array, **kwargs) -> np.array:
         x, y, z = pos[1:4]
 
         r = np.sqrt(x*x + y*y + z*z) 
@@ -68,9 +70,13 @@ class OblongEllipsoid(Coordinates):
     coords: tuple[Function]     = (Function('t')(interval), Function('r')(interval), Function('θ')(interval), Function('φ')(interval))
     coords_string: tuple[str]   = ('t', 'r', 'θ', 'φ')
     t, r, θ, φ                  = coords
-    velocity_equation: Function = (r.diff(interval)**2 + r**2 * φ.diff(interval)**2 + r**2 * sin(θ)**2 * θ.diff(interval)**2)**(1/2)
 
-    def to_cartesian(pos: np.array, **kwargs):
+    @classmethod
+    def velocity_equation(cls, **kwargs) -> Function:
+        a = kwargs.get('a',0)
+        return ( cls.r.diff(cls.interval)**2 * (sin(cls.θ)**2 * cls.r**2/(cls.r**2 + a**2) + cos(cls.θ)**2) + cls.r**2 * cls.θ.diff(cls.interval)**2 + cls.r**2 * cls.φ.diff(cls.interval)**2 * sin(cls.θ)**2 + a**2 * (cls.θ.diff(cls.interval)**2 * cos(cls.θ)**2 + cls.φ.diff(cls.interval)**2 * sin(cls.θ)**2) )**(1/2)
+
+    def to_cartesian(pos: np.array, **kwargs) -> np.array:
         a = kwargs.get('a',0)
 
         r, θ, φ = pos[1:4]
@@ -83,7 +89,7 @@ class OblongEllipsoid(Coordinates):
 
         return np.array([pos[0], x, y, z])
 
-    def to_spherical(pos: np.array, **kwargs):
+    def to_spherical(pos: np.array, **kwargs) -> np.array:
         a = kwargs.get('a',0)
 
         r, θ = pos[1:3]
@@ -99,8 +105,13 @@ class OblongEllipsoid(Coordinates):
 # Spherical representation of space-time, used in the Schwarzschild metric example. This is a special case
 # of the Oblong Ellipsoid reprensentation when a = 0, "a" being the rotation speed of a blackhole in the Kerr metric.
 class Spherical(OblongEllipsoid):
-    def to_cartesian(pos: np.array, **kwargs):
+
+    @classmethod
+    def velocity_equation(cls, **kwargs) -> Function:
+        return simplify(super(Spherical, Spherical).velocity_equation(a=0))
+
+    def to_cartesian(pos: np.array, **kwargs) -> np.array:
         return super(Spherical, Spherical).to_cartesian(pos, a=0)
 
-    def to_spherical(pos: np.array, **kwargs):
+    def to_spherical(pos: np.array, **kwargs) -> np.array:
         return pos

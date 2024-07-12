@@ -4,6 +4,6 @@ DESCRIPTION: Takes a sympy `Function` object and converts it to a lambda functio
 RETURNS - lambda: typing.Callable ~~ Lambda function to be used for numerical solving.
 
 PARAMETERS:
-- coordinates: `geodpy.Coordinates` ~~ Coordinates system to be used for the conversion of the expression.
+- coordinates: `geodpy.coordinates.Coordinates` ~~ Coordinates system to be used for the conversion of the expression.
 - expression: `sympy.Function` ~~ Expression to be converted.
 

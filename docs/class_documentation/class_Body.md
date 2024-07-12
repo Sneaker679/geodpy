@@ -12,7 +12,7 @@ The values for each coordinate initial values needs to be in the same order as d
 
 ## Attributes
 - \_geodesics: `geodpy.Geodesics` ~~ Geodesics object which contains the geodesics to solve through scipy.integrate.solve\_ivp.
-- \_coordinates: `geodpy.Coordinates` ~~ Coordinates object for calculating the norm of the velocity vector, as well as converting the current coordinate base into a cartesian of spherical base.
+- \_coordinates: `geodpy.coordinates.Coordinates` ~~ Coordinates object for calculating the norm of the velocity vector, as well as converting the current coordinate base into a cartesian of spherical base.
 - s: `numpy.array` ~~ Numpy array of the interval noted `s` for each point calculated using the `solve_trajectory()` method.
 - pos: `numpy.array[numpy.array]` ~~ Numpy 2D array containing the position of the body at each point calculated using the `solve_trajectory()` method. Each row represents a coordinate and each column a different point that was solved.
 - vel: `numpy.array[numpy.array]` ~~ Numpy 2D array containing the velocity of the body at each point calculated using the `solve_trajectory()`. Each row represents a coordinate and each column the velocity of a specific point that was solved.
@@ -52,7 +52,7 @@ DESCRIPTION: Transforms the self.pos and self.vel attributes from its current co
 RETURNS - new\_body: `geodpy.Body` ~~ New body with no geodesics tied to it. The only set attributes are self.\_coordinates, self.s and self.pos which now correspond to the new cooridnate system.
 
 PARAMETERS:
- - \*\*kwargs ~~ Arguments to be given to the `to_cartesian()` method of self.`_coordinates ` as a parameter for conversion. Some coordinate systems require these additionnal arguments. For instance, the OblongElipsoid system requires the parameter `a`, which corresponds to how much "Oblong" the geometry is. When `a = 0`, we get a spheric coordinate system.
+ - \*\*kwargs ~~ Arguments to be given to the `to_cartesian()` method of `self._coordinates` as a parameter for conversion. Some coordinate systems require these additionnal arguments. For instance, the OblongElipsoid system requires the parameter `a`, which corresponds to how much "Oblong" the geometry is. When `a = 0`, we get a spheric coordinate system.
 
 
 #### def get\_spheric\_body()
@@ -61,7 +61,7 @@ DESCRIPTION: Transforms the self.pos and self.vel attributes from its current co
 RETURNS - new\_body: `geodpy.Body` ~~ New body with no geodesics tied to it. The only set attributes are self.\_coordinates, self.s and self.pos which now correspond to the new cooridnate system.
 
 PARAMETERS:
- - \*\*kwargs ~~ Arguments to be given to the `to_spherical()` method of self.`_coordinates ` as a parameter for conversion. Some coordinate systems require these additionnal arguments. For instance, the OblongElipsoid system requires the parameter `a`, which corresponds to how much "Oblong" the geometry is. When `a = 0`, we get a spheric coordinate system.
+ - \*\*kwargs ~~ Arguments to be given to the `to_spherical()` method of `self._coordinates` as a parameter for conversion. Some coordinate systems require these additionnal arguments. For instance, the OblongElipsoid system requires the parameter `a`, which corresponds to how much "Oblong" the geometry is. When `a = 0`, we get a spheric coordinate system.
 
 
 

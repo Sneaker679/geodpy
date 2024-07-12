@@ -3,8 +3,6 @@ from geodpy.plotters import PolarPlot, CartesianPlot3D
 from geodpy.coordinates import OblongEllipsoid, Spherical
 
 from sympy import *
-import matplotlib.animation as animation
-import matplotlib.patches as patches
 import numpy as np
 
 import os
@@ -118,17 +116,17 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
 
     # Plotting
     if dim == 2:
-        body_sph = body.get_spheric_body(a=a)
-        plotter = PolarPlot(body_sph)
+        body = body.get_spheric_body(a=a)
+        plotter = PolarPlot(body)
     elif dim == 3:
-        body_cart = body.get_cartesian_body(a=a)
-        plotter = CartesianPlot3D(body_cart)
+        body = body.get_cartesian_body(a=a)
+        plotter = CartesianPlot3D(body)
     else: raise NotImplementedError
 
     if plot_orbit:    plotter.plot(title=orbit_plot_title)
     if animate:       plotter.animate()
     if plot_velocity:
-        body.calculate_velocities()
+        body.calculate_velocities(a=a)
         plotter.plot_velocity("Velocity")
 
     # Drawing blackhole (inner/external horizons and ergosphere for 2D, external horizon for 3D)

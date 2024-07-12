@@ -1,5 +1,5 @@
 ## class OblongEllipsoid(Coordinates)
-DESCRIPTION: Child class of `Coordinates` which implements a OblongEllipsoid coordinate system.
+DESCRIPTION: Child class of `geodpy.coordinates.Coordinates` which implements a Oblong Ellipsoid coordinate system.
 
 
 ### Attributes

@@ -4,7 +4,7 @@ DESCRIPTION: Takes in basic parameters and automates the process of taking a met
 RETURNS - body: `geodpy.Body` ~~ A body containing a fully solved trajectory.
 
 PARAMETERS
-- coordinates: `geodpy.Coordinates` ~~ Coordinate system to be used.
+- coordinates: `geodpy.coordinates.Coordinates` ~~ Coordinate system to be used.
 - g\_mk: `sympy.Matrix` ~~ Metric of the space-time. Needs to use the same coordinates as self.coordinates.
 - initial\_pos: `list[float]` ~~ Initial position of the object to be fed to the `Body` object.
 - initial\_vel: `list[float]` ~~ Initial velocity of the object to be fed to the `Body` object.

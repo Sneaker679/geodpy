@@ -14,7 +14,7 @@ output_kwargs = {
     "velocity_pdf_name": "v_schwarzschild.pdf",
     "plot_orbit"       : True,
     "animate"          : True,
-    "plot_velocity"    : False,
+    "plot_velocity"    : True,
     "save_pdf"         : False,
     "save_mp4"         : False,
     "v_save_pdf"       : False  

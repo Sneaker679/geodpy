@@ -33,4 +33,4 @@ RETURNS - None
 PARAMETERS:
 - center: `tuple[float, float]` ~~ Coordinates of the center of the sphere.
 - radius: `float` ~~ Radius of the sphere.
-- facecolor: `str` ~~ Color of the face of the sphere.
+- facecolor: `str` ~~ Matplotlib color of the face of the sphere.

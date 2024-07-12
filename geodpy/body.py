@@ -69,8 +69,8 @@ class Body:
 
     # Calculates the norm of the velocity vector for each points as a function of coordinate time.
     # This function assumes that self.pos[0] is time.
-    def calculate_velocities(self) -> np.array:
-        velocity_equation = self._coordinates.velocity_equation
+    def calculate_velocities(self, **kwargs) -> np.array:
+        velocity_equation = self._coordinates.velocity_equation(**kwargs)
 
         # Defining the arguments for the lambda velocity equation
         symbolic_args = list(self._coordinates.coords)[1:4]

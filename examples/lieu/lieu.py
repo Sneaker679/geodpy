@@ -3,8 +3,6 @@ from geodpy.plotters import PolarPlot, CartesianPlot2D
 from geodpy.coordinates import Spherical
 
 from sympy import *
-import matplotlib.animation as animation
-import matplotlib.patches as patches
 import numpy as np
 
 import os

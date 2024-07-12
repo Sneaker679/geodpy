@@ -16,10 +16,10 @@ output_kwargs = {
     "velocity_pdf_name": "v_kerr.pdf",
     "plot_orbit"       : True,
     "animate"          : True,
-    "plot_velocity"    : False,
+    "plot_velocity"    : True,
     "save_pdf"         : False,
     "save_mp4"         : False,
     "v_save_pdf"       : False  
 }
 
-kerr(rs=rs, ro=ro, h=h, k=k, a=a, θ_init=np.pi/2, T=500, output_kwargs=output_kwargs, verbose=2, dim=2)
+kerr(rs=rs, ro=ro, h=h, k=k, a=a, θ_init=np.pi/2, T=500, output_kwargs=output_kwargs, verbose=1, dim=2)

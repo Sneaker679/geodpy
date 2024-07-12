@@ -1,5 +1,5 @@
 ## class Cartesian(Coordinates)
-DESCRIPTION: Child class of `Coordinates` which implements a cartesian coordinate system.
+DESCRIPTION: Child class of `geodpy.coordinates.Coordinates` which implements a cartesian coordinate system.
 
 
 ### Attributes
