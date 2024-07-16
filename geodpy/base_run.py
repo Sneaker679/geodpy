@@ -15,6 +15,7 @@ def basic(
     g_mk:          Matrix,
     initial_pos:   list[float],
     initial_vel:   list[float],
+    simplify:      bool,
     solver_kwargs: dict = {},
     verbose:       int  = 0
 ) -> None:
@@ -29,6 +30,7 @@ def basic(
 
     print("Calculating geodesics")
     geodesics: Geodesics = Geodesics(coordinates, g_mk)
+    if simplify is True: geodesics.simplify()
     body = Body(geodesics, initial_pos, initial_vel)
 
     print("Solving trajectory")

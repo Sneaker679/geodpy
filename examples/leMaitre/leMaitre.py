@@ -1,6 +1,6 @@
 from geodpy import Geodesics, Body, basic
-from geodpy.plotters import PolarPlot
-from geodpy.coordinates import Spherical
+from geodpy.plotters import PolarPlot, CartesianPlot2D
+from geodpy.coordinates import LeMaitre
 
 from sympy import *
 import numpy as np
@@ -10,42 +10,45 @@ import os
 # Possible symbols
 #τ,t,r,a,b,c,θ,φ,η,ψ,x,y 
 
-# Returns the velocity a body should have on a circular orbit. Used for comparaisons. Not used in this file.
-def velocity_circ(rs, r, Λ=1.11e-52):
-    return np.sqrt((rs - 2*Λ*r*r*r/3)/(2*r-3*rs))
-
-# Returns k for a circular orbit
-def kcirc(rs, r, Λ=1.11e-52) -> float:
-    return (1-rs/r-Λ*r*r/3)/np.sqrt(1-3*rs/(2*r))
-
 # Returns h for a circular orbit
-def hcirc(rs, r, Λ=1.11e-52) -> float:
-    return np.sqrt((rs/(2*r*r*r) - Λ/3)/((1/(r*r*r*r))*(1-3*rs/(2*r))))
+def hcirc(rs: float, r: float) -> float:
+    po = 2/3 * np.sqrt(r*r*r/rs)
+    return np.sqrt( 2/9 * (3/2)**(8/3) * rs**(4/3) * po**(2/3) * 1/(1 - 3/2 * (2/3 * rs/po)**(2/3)) )
 
-# Sitter Schwarzschild example function
-def sitter_schwarzschild(rs: float, ro: float, h: float, k: float, Λ: float = 1.11e-52, T: float|None = None, output_kwargs: dict = {}, verbose: int = 1) -> Body:
+# Schwarzschild example function
+def leMaitre(rs: float, ro: float, h: float, sim_T: float|None = None, output_kwargs: dict = {}, verbose: int = 1) -> Body:
     # Initial values
-    pos = [0, ro, np.pi/2, 0]
-    vel = [k/(1-rs/ro), 0, 0, h/(ro**2)]
-    if verbose == 1: print(f"h={h}, k={k}, Λ={Λ}")
+    To = 0
+    po = 2/3 * np.sqrt(ro*ro*ro/rs) + To
+
+    dₛTo = np.sqrt(1/(1 - 3/2 * (2/3 * rs/po)**(2/3)))
+    dₛpo = dₛTo
+    dₛφo = np.sqrt(2/9 * dₛpo * dₛpo/(po*po))
+    dₛφo = h/(ro*ro)
+
+    pos = [0, po, np.pi/2, 0]
+    vel = [dₛTo, dₛpo, 0, dₛφo]
+    if verbose == 1: print(f"h={h}")
 
     # Metric config
-    coordinates = Spherical
-    t, r, θ, φ = Spherical.coords
+    coordinates = LeMaitre
+    T, ρ, θ, φ = LeMaitre.coords
+    r = (3/2 * (ρ - T))**(2/3) * rs**(1/3)
 
     gₘₖ = Matrix([
-        [1-rs/r - Λ*r*r/3 ,0                    ,0          ,0                ],
-        [0                ,1/(Λ*r*r/3 + rs/r-1) ,0          ,0                ],
-        [0                ,0                    ,-r**2      ,0                ],
-        [0                ,0                    ,0          ,-r**2 * sin(θ)**2]
+        [1     ,0     ,0          ,0          ],
+        [0     ,-rs/r  ,0          ,0          ],
+        [0     ,0     ,-r**2      ,0          ],
+        [0     ,0     ,0          ,-r**2 * sin(θ)**2]
     ])
 
+
     # Solver config
-    if T is None: T = 2*np.pi/np.sqrt(rs/(2*ro*ro*ro) - Λ/3)
+    if sim_T is None: sim_T = 2*np.pi*(2*ro*ro*ro/rs)**(1/2) # Third law of Kepler
     solver_kwargs = {
-        "time_interval": (0,T),           
+        "time_interval": (0,sim_T),           
         "method"       : "Radau",          
-        "max_step"     : T*1e-3,
+        "max_step"     : sim_T*1e-3,
         "atol"         : 1e-8,              
         "rtol"         : 1e-8,              
         "events"       : None,              
@@ -79,6 +82,7 @@ def sitter_schwarzschild(rs: float, ro: float, h: float, k: float, Λ: float = 1
     assert not (v_save_pdf and not plot_velocity)
 
     # Plotting
+    body = body.get_spheric_body(rs=rs)
     plotter = PolarPlot(body)
 
     if plot_orbit:    plotter.plot(title=orbit_plot_title)

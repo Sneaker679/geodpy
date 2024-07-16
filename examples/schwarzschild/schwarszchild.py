@@ -11,11 +11,11 @@ import os
 #τ,t,r,a,b,c,θ,φ,η,ψ,x,y 
 
 # Returns k for a circular orbit
-def kcirc(rs, r) -> float:
+def kcirc(rs: float, r: float) -> float:
     return (1-rs/r)/np.sqrt(1-3*rs/(2*r))
 
 # Returns h for a circular orbit
-def hcirc(rs, r) -> float:
+def hcirc(rs: float, r: float) -> float:
     return np.sqrt(rs*r/(2-3*rs/r))
 
 # Schwarzschild example function
@@ -54,6 +54,7 @@ def schwarzschild(rs: float, ro: float, h: float, k: float, T: float|None = None
         "g_mk"         : gₘₖ, 
         "initial_pos"  : pos, 
         "initial_vel"  : vel, 
+        "simplify"     : True,
         "solver_kwargs": solver_kwargs, 
         "verbose"      : verbose, 
     }

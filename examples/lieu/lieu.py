@@ -50,6 +50,7 @@ def lieu(ro: float, h: float, k: float, α: float = 10e-6, T: float|None = None,
         "g_mk"         : gₘₖ, 
         "initial_pos"  : pos, 
         "initial_vel"  : vel, 
+        "simplify"     : True
         "solver_kwargs": solver_kwargs, 
         "verbose"      : verbose, 
     }

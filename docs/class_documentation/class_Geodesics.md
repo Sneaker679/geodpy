@@ -15,4 +15,11 @@ DESCRIPTION: Class that acts as a variable container for all geodesics-like vari
 
 
 ## Methods
-No public methods.
+
+#### def simplify()
+DESCRIPTION: Simplifies the geodesics equations with Sympy if possible and stores the result in self.\_dₛuᵏ and self.\_dₛuᵏ\_lambda. Very performance hungry on big equations. 
+
+RETURNS - None
+
+PARAMETERS:
+- None

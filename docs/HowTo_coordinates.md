@@ -1,7 +1,7 @@
 ## Import
 `geodpy.coordinates` classes:
 - (ABSTRACT) `Coordinates`;
-- `Cartesian`, `Spheric`, `OblongEllipsoid`.
+- `Cartesian`, `Spheric`, `OblongEllipsoid`, `LeMaitre`.
 
 Importable via: `from geodpy.plotters import *`.
 

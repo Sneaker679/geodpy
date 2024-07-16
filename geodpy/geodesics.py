@@ -39,3 +39,7 @@ class Geodesics:
         
         return dₛuᵏ
 
+    def simplify(self):
+        self._dₛuᵏ= simplify(self._dₛuᵏ)
+        self._dₛuᵏ_lambda = vector_to_lambda(self._coordinates, self._dₛuᵏ)
+

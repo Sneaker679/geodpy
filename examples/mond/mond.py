@@ -10,14 +10,13 @@ import os
 # Possible symbols
 #τ,t,r,a,b,c,θ,φ,η,ψ,x,y 
 
-def hcirc(M: float, r: float, r0: float = 1, ao:float = np.sqrt(1.11e-52/3)) -> float:
-    print(1-np.sqrt(M*ao)/2)
-    print(np.log(r/r0))
-    print(np.sqrt(M*ao)*np.log(r/r0))
-    return np.sqrt(np.sqrt(M*ao)/2) * r/np.sqrt(1 - np.sqrt(M*ao)/2 + np.sqrt(M*ao)*np.log(r/r0))
+# Returns k for a circular orbit
+def hcirc(M: float, r: float, rp: float = 1, ao:float = np.sqrt(1.11e-52/3)) -> float:
+    return np.sqrt(np.sqrt(M*ao)/2) * r/np.sqrt(1 - np.sqrt(M*ao)/2 + np.sqrt(M*ao)*np.log(r/rp))
 
-def kcirc(M: float, r: float, r0: float = 1, ao:float = np.sqrt(1.11e-52/3)) -> float:
-    return (1 - np.sqrt(M*ao) * np.log(r/r0))/np.sqrt(1 - np.sqrt(M*ao)/2 + np.sqrt(M*ao) * np.log(r/r0))
+# Returns h for a circular orbit
+def kcirc(M: float, r: float, rp: float = 1, ao:float = np.sqrt(1.11e-52/3)) -> float:
+    return (1 - np.sqrt(M*ao) * np.log(r/rp))/np.sqrt(1 - np.sqrt(M*ao)/2 + np.sqrt(M*ao) * np.log(r/rp))
 
 # Lieu example function
 def mond(M: float, ro: float, h: float, k: float, ao: float = np.sqrt(1.11e-52/3), T: float|None = None, output_kwargs: dict = {}, verbose: int = 1) -> Body:
@@ -30,14 +29,14 @@ def mond(M: float, ro: float, h: float, k: float, ao: float = np.sqrt(1.11e-52/3
     t, r, θ, φ = Spherical.coords
 
     gₘₖ = Matrix([
-        [1+(M*ao)**(1/2) * ln(r) ,0                              ,0          ,0          ],
-        [0                       ,-1/(1+(M*ao)**(1/2) * ln(r))   ,0          ,0          ],
+        [1+2*(M*ao)**(1/2) * ln(r) ,0                              ,0          ,0          ],
+        [0                       ,-1/(1+2*(M*ao)**(1/2) * ln(r))   ,0          ,0          ],
         [0                       ,0                              ,-r**2      ,0          ],
         [0                       ,0                              ,0          ,-r**2 * sin(θ)**2]
     ])
 
     # Solver config
-    if T is None: T = 2 * np.pi * ro /(np.sqrt(2*M) * np.sqrt(1 + 2*M* np.log(ro))) # Third law of Kepler
+    if T is None: T = 2 * np.pi * ro * np.sqrt(1/np.sqrt(M*ao))# Third law of Kepler for Mond
     solver_kwargs = {
         "time_interval": (0,T),           
         "method"       : "Radau",          
@@ -53,6 +52,7 @@ def mond(M: float, ro: float, h: float, k: float, ao: float = np.sqrt(1.11e-52/3
         "g_mk"         : gₘₖ, 
         "initial_pos"  : pos, 
         "initial_vel"  : vel, 
+        "simplify"     : True,
         "solver_kwargs": solver_kwargs, 
         "verbose"      : verbose, 
     }

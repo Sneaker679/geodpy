@@ -94,6 +94,7 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
         "g_mk"         : gₘₖ, 
         "initial_pos"  : pos, 
         "initial_vel"  : vel, 
+        "simplify"     : False,
         "solver_kwargs": solver_kwargs, 
         "verbose"      : verbose, 
     }
