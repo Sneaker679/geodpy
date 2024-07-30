@@ -1,5 +1,5 @@
-## class LeMaitre(Coordinates)
-DESCRIPTION: Child class of `geodpy.coordinates.Coordinates` which implements a LeMaitre coordinate system where the observer is free falling towards the origin instead of being static.
+## class Lemaitre(Coordinates)
+DESCRIPTION: Child class of `geodpy.coordinates.Coordinates` which implements a Lemaitre coordinate system where the observer is free falling towards the origin instead of being static.
 
 
 ### Attributes

@@ -1,6 +1,6 @@
 from geodpy import Geodesics, Body, basic
-from geodpy.plotters import PolarPlot, CartesianPlot2D
-from geodpy.coordinates import LeMaitre
+from geodpy.plotters import PolarPlot
+from geodpy.coordinates import Lemaitre
 
 from sympy import *
 import numpy as np
@@ -16,7 +16,7 @@ def hcirc(rs: float, r: float) -> float:
     return np.sqrt( 2/9 * (3/2)**(8/3) * rs**(4/3) * po**(2/3) * 1/(1 - 3/2 * (2/3 * rs/po)**(2/3)) )
 
 # Schwarzschild example function
-def leMaitre(rs: float, ro: float, h: float, sim_T: float|None = None, output_kwargs: dict = {}, verbose: int = 1) -> Body:
+def lemaitre(rs: float, ro: float, h: float, sim_T: float|None = None, output_kwargs: dict = {}, verbose: int = 1) -> Body:
     # Initial values
     To = 0
     po = 2/3 * np.sqrt(ro*ro*ro/rs) + To
@@ -31,8 +31,8 @@ def leMaitre(rs: float, ro: float, h: float, sim_T: float|None = None, output_kw
     if verbose == 1: print(f"h={h}")
 
     # Metric config
-    coordinates = LeMaitre
-    T, ρ, θ, φ = LeMaitre.coords
+    coordinates = Lemaitre
+    T, ρ, θ, φ = Lemaitre.coords
     r = (3/2 * (ρ - T))**(2/3) * rs**(1/3)
 
     gₘₖ = Matrix([
@@ -71,7 +71,7 @@ def leMaitre(rs: float, ro: float, h: float, sim_T: float|None = None, output_kw
     orbit_pdf_name:    str  = output_kwargs.get("orbit_pdf_name"   , "o_schwarzschild.pdf")
     orbit_mp4_name:    str  = output_kwargs.get("orbit_mp4_name"   , "o_schwarzschild.mp4")
     velocity_pdf_name: str  = output_kwargs.get("velocity_pdf_name", "v_schwarzschild.pdf") 
-    plot_orbit:        bool = output_kwargs.get("plot_orbit"       , True         )
+    plot_orbit:        bool = output_kwargs.get("plot_orbit"       , False        )
     animate:           bool = output_kwargs.get("animate"          , False        )
     plot_velocity:     bool = output_kwargs.get("plot_velocity"    , False        )
     save_pdf:          bool = output_kwargs.get("save_pdf"         , False        )
@@ -82,7 +82,7 @@ def leMaitre(rs: float, ro: float, h: float, sim_T: float|None = None, output_kw
     assert not (v_save_pdf and not plot_velocity)
 
     # Plotting
-    body = body.get_spheric_body(rs=rs)
+    body = body.get_spherical_body(rs=rs)
     plotter = PolarPlot(body)
 
     if plot_orbit:    plotter.plot(title=orbit_plot_title)
@@ -99,9 +99,9 @@ def leMaitre(rs: float, ro: float, h: float, sim_T: float|None = None, output_kw
         os.makedirs("outputs")
 
     # Save plots
-    if save_pdf:   plotter.save_plot(orbit_pdf_name)
-    if save_mp4:   plotter.save_animation(orbit_mp4_name, dpi=300)
-    if v_save_pdf: plotter.save_plot_velocity(velocity_pdf_name)
+    if save_pdf:   plotter.save_plot("outputs/" + orbit_pdf_name)
+    if save_mp4:   plotter.save_animation("outputs/" + orbit_mp4_name, dpi=300)
+    if v_save_pdf: plotter.save_plot_velocity("outputs/" + velocity_pdf_name)
 
     plotter.show()
     return body

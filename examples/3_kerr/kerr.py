@@ -1,6 +1,6 @@
 from geodpy import Geodesics, Body, basic
 from geodpy.plotters import PolarPlot, CartesianPlot3D
-from geodpy.coordinates import OblongEllipsoid, Spherical
+from geodpy.coordinates import OblongEllipsoid
 
 from sympy import *
 import numpy as np
@@ -29,7 +29,7 @@ def radii_polar(rs: float, a: float) -> tuple[float, float]:
     r_ext, r_int = radii(rs, a)
     return OblongEllipsoid.to_spherical(np.array([[0,0], [r_ext,r_int], [np.pi/2,np.pi/2], [0,0]]), a=a)[1]
 
-# Returns the ergosphere radius in polar (for plotting).
+# Returns the ergosphere radius in polar coordinates (for plotting).
 def ergosphere_radius_polar(rs: float, a: float, θ: float) -> float:
     ergo = rs/2 + np.sqrt(rs*rs/4 - a*a*np.cos(θ))
     return OblongEllipsoid.to_spherical(np.array([[0], [ergo], [np.pi/2], [0]]), a=a)[1][0]
@@ -105,19 +105,19 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
     orbit_pdf_name:    str  = output_kwargs.get("orbit_pdf_name"   , "o_kerr.pdf")
     orbit_mp4_name:    str  = output_kwargs.get("orbit_mp4_name"   , "o_kerr.mp4")
     velocity_pdf_name: str  = output_kwargs.get("velocity_pdf_name", "v_kerr.pdf") 
-    plot_orbit:        bool = output_kwargs.get("plot_orbit"       , True         )
-    animate:           bool = output_kwargs.get("animate"          , False        )
-    plot_velocity:     bool = output_kwargs.get("plot_velocity"    , False        )
-    save_pdf:          bool = output_kwargs.get("save_pdf"         , False        )
-    save_mp4:          bool = output_kwargs.get("save_mp4"         , False        )
-    v_save_pdf:        bool = output_kwargs.get("v_save_pdf"       , False        )  
+    plot_orbit:        bool = output_kwargs.get("plot_orbit"       , False       )
+    animate:           bool = output_kwargs.get("animate"          , False       )
+    plot_velocity:     bool = output_kwargs.get("plot_velocity"    , False       )
+    save_pdf:          bool = output_kwargs.get("save_pdf"         , False       )
+    save_mp4:          bool = output_kwargs.get("save_mp4"         , False       )
+    v_save_pdf:        bool = output_kwargs.get("v_save_pdf"       , False       )  
     assert not (save_pdf   and not plot_orbit   )
     assert not (save_mp4   and not animate      )
     assert not (v_save_pdf and not plot_velocity)
 
     # Plotting
     if dim == 2:
-        body = body.get_spheric_body(a=a)
+        body = body.get_spherical_body(a=a)
         plotter = PolarPlot(body)
     elif dim == 3:
         body = body.get_cartesian_body(a=a)
@@ -147,9 +147,9 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
         os.makedirs("outputs")
 
     # Save plots
-    if save_pdf:   plotter.save_plot(orbit_pdf_name)
-    if save_mp4:   plotter.save_animation(orbit_mp4_name, dpi=300)
-    if v_save_pdf: plotter.save_plot_velocity(velocity_pdf_name)
+    if save_pdf:   plotter.save_plot("outputs/" + orbit_pdf_name)
+    if save_mp4:   plotter.save_animation("outputs/" + orbit_mp4_name, dpi=300)
+    if v_save_pdf: plotter.save_plot_velocity("outputs/" + velocity_pdf_name)
 
     plotter.show()
     return body

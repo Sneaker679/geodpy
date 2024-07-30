@@ -101,7 +101,7 @@ class OblongEllipsoid(Coordinates):
 
         return np.array([pos[0], r_sp, θ_sp, pos[3]])
 
-### Spherical-oblongellipsoid-coordinates class ###
+### Spherical-OblongEllipsoid-coordinates class ###
 # Spherical representation of space-time, used in the Schwarzschild metric example. This is a special case
 # of the Oblong Ellipsoid reprensentation when a = 0, "a" being the rotation speed of a blackhole in the Kerr metric.
 class Spherical(OblongEllipsoid):
@@ -116,10 +116,10 @@ class Spherical(OblongEllipsoid):
     def to_spherical(pos: np.array, **kwargs) -> np.array:
         return pos
 
-### LeMaitre-coordinates class ###
-# LeMaitre coordinates of space-time cooresponding to a coordinate system where the observer is free-falling towards the origin
+### Lemaitre-coordinates class ###
+# Lemaitre coordinates of space-time cooresponding to a coordinate system where the observer is free-falling towards the origin
 # instead of being static, like in a standard sperical coordinate system.
-class LeMaitre(Coordinates):
+class Lemaitre(Coordinates):
     interval: Symbol            = symbols('s')
     coords: tuple[Function]     = (Function('T')(interval), Function('ρ')(interval), Function('θ')(interval), Function('φ')(interval))
     coords_string: tuple[str]   = ('T', 'ρ', 'θ', 'φ')

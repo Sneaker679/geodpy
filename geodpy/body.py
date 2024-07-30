@@ -104,7 +104,7 @@ class Body:
         return new_body
 
     # Creates a new Body object from the current body, but represented in spherical body coordinates.
-    def get_spheric_body(self, **kwargs):
+    def get_spherical_body(self, **kwargs):
         new_body = Body(geodesics = None)
         new_body._coordinates = Spherical
 

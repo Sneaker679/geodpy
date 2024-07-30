@@ -8,9 +8,9 @@
 Importable via: `from geodpy import *`.
 
 ## Description
-This is the most important of the *HowTo*s as we tacke the main purpose of this library - calculating trajectories of bodies in a given arbitrary metric. The 2 core objects are `Geodesics` and `Body`, who handle respectively the calculation of the symbolic geodesics and the calculation of the trajectories given the geodesics. All the results are stored in the attributes of these objects, such as all the points of a trajectory.
+This is the most important and first of the *HowTo*s as we tackle the main purpose of this library - calculating trajectories of bodies in a given arbitrary metric. The 2 core objects are `Geodesics` and `Body`, which handle respectively the calculation of the symbolic geodesics and the calculation of the trajectories given the geodesics. All the results are stored in the attributes of these objects, such as all the points of a trajectory.
 
-In this file are 2 ways to calculate the trajectories. The first one starts in the next section, and later you can find another section detailing how to use the function `basic()`.
+**In this file are 2 proposed ways to calculate the trajectories.** The first is way is the *standard* way. The second way is by using the `basic()` function offered with the library.
 
 ## Example without `basic()`
 The main workflow for calculating trajectories looks like this:
@@ -32,7 +32,7 @@ ds^2 &= dt^2 - dr^2 - r^2 d\theta^2 - r^2 \sin^2 (\theta) d\phi^2
 
 The different systems yield a widely different form of the same metric. But from more complex metrics, more complex coordinate systems may emerge. As such, using the proper coordinate system becomes curcial to properly understand the results obtained when calculating a trajectory. More specifically, there is a need of converting a particular trajectory in a particular coordinate system into another coordinate system, like a cartesian system, which is easy to understand and plot using `matplotlib`. This is the job of the `Coordinates` subclasses of this library.
 
-As of writing this, natively, geodpy supports 3 coordinate systems: `Cartesian`, `Spherical` and `OblongEllipsoid`. These can be imported via `from geodpy.coordinates import Cartesian, Spherical, OblongEllipsoid`. However, it is fairly easy to code yourself other coordinate systems and still be able to use the functionnalities of this library. For this, refer to the `HowTo_coordinates.md` file in this directory. 
+As of writing this, natively, geodpy supports 3 coordinate systems: `Cartesian`, `Spherical` and `OblongEllipsoid`. These can be imported via `from geodpy.coordinates import Cartesian, Spherical, OblongEllipsoid`. However, it is fairly easy to code yourself other coordinate systems and still be able to use the functionnalities of this library. For this, refer to the `2_HowTo_coordinates.md` file in this directory. 
 
 The Kerr metric is represented in a OblongEllipsoid coordinate system. As such, we need to import this coordinate system and initialize the coordinates in order to declare the metric:
 ```python
@@ -108,9 +108,9 @@ spheric_body = body.get_spheric_body(a=0.2)
 ```
 These methods create new `Body` objects where the "pos" and "vel" attributes have been modified according to the new coordinate system. This step relies entirely on the implementation of the `Coordinates` class which was defined in the first step.
 
-Also notice that these methods require the specification of the "a" parameter. This is because the `OblongEllipsoid` coordinate system is parametrized by "a", which corresponds in this case to the rotation speed of the blackhole. Other metrics may not need such parameters, in other words, the parameters of `get_x_body()` is metric dependant. See `HowTo_coordinates.md` for more information.
+Also notice that these methods require the specification of the "a" parameter. This is because the `OblongEllipsoid` coordinate system is parametrized by "a", which corresponds in this case to the rotation speed of the blackhole. Other metrics may not need such parameters, in other words, the parameters of `get_x_body()` is metric dependant. See `2_HowTo_coordinates.md` for more information.
 
-These new objects can now be used for plotting using the plotting functionalities of this library. Before the conversion, it was impossible to do so. Refer to `HowTo_plotters.md` to plot your body.
+These new objects can now be used for plotting using the plotting functionalities of this library. Before the conversion, it was impossible to do so. Refer to `3_HowTo_plotters.md` to plot your body.
 
 ## Example with `basic()`
 The function `basic()` basically condenses most of the previous step into one function. It is not necessary to use it per se, but it *might* be easier. In this example, we are still using the Kerr metric.
@@ -166,4 +166,4 @@ Like it was mentionned, it yields a body with its trajectory already calculated.
 cartesian_body = body.get_cartesian_body(a=0.2)
 spheric_body = body.get_spheric_body(a=0.2)
 ```
-and plot either of these 2 objects using the plotters of the library. Refer to `HowTo_plotters.md` for more information.
+and plot either of these 2 objects using the plotters of the library. Refer to `3_HowTo_plotters.md` for more information.

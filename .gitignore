@@ -1,6 +1,5 @@
-**/outputs/*.mp4
+*.mp4
 *.pdf
-examples/notes
 **/__pycache__
 venv
 geodpy/tags

@@ -33,8 +33,8 @@ class BodyPlotter(metaclass=ABCMeta):
         pass
 
     def save_plot(self, file_name: str = "body") -> None:
-        if file_name[-4:-1] != ".pdf":
-            file_name.join(".pdf")
+        if file_name[-4:] != ".pdf" and file_name[-4:] != ".png":
+            file_name += ".pdf"
         self.fig.savefig(file_name)
 
 
@@ -65,8 +65,8 @@ class BodyPlotter(metaclass=ABCMeta):
         return title
 
     def save_animation(self, file_name: str = "body", dpi=100) -> None:
-        if file_name[-4:-1] != ".mp4":
-            file_name.join(".mp4")
+        if file_name[-4:] != ".mp4":
+            file_name += ".mp4"
         self.ani.save(file_name, dpi=dpi)
 
 
@@ -84,8 +84,8 @@ class BodyPlotter(metaclass=ABCMeta):
         self.ax_vel.set_title(title)
 
     def save_plot_velocity(self, file_name: str = "body_velocity") -> None:
-        if file_name[-4:-1] != ".pdf":
-            file_name.join(".pdf")
+        if file_name[-4:] != ".pdf" and file_name[-4:] != ".png":
+            file_name += ".pdf"
         self.fig_vel.savefig(file_name)
 
 

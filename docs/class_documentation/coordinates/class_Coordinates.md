@@ -1,5 +1,5 @@
 # class Coordinates(metaclass=ABCMeta) <-- Abstract class
-DESCRIPTION: Abstract and static class that all coordinates systems need to be derived from for this code to work.
+DESCRIPTION: Abstract and static class that all coordinate systems need to be derived from for this code to work.
 
 
 ## Parameters
