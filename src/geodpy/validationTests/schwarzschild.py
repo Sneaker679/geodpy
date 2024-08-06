@@ -1,5 +1,5 @@
 import numpy as np
-from geodpy.body import Body
+from .. import Body
 
 # Energy check (k)
 def check_k(body: Body, rs: float, tol: float = 0.00001) -> None:

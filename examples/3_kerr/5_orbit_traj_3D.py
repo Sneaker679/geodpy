@@ -2,12 +2,13 @@ import numpy as np
 from kerr import kerr, circ
 
 # Initial values
-rs = 1 
-ro = 2
-a = 0.495
+rs = 2 
+ro = 7
+a = 0.9
 σ = -1 #1 or -1
 assert a < rs/2
-k, h = 1, 0
+k, h = circ(rs, ro, a, σ)
+h += -1.5
 
 output_kwargs = {
     "orbit_plot_title" : "Trajectory of a star falling into a rotating blackhole",
@@ -22,4 +23,4 @@ output_kwargs = {
     "v_save_pdf"       : False  
 }
 
-kerr(rs=rs, ro=ro, h=h, k=k, a=a, θ_init=0.00001, T=500, output_kwargs=output_kwargs, verbose=1, dim=3)
+kerr(rs=rs, ro=ro, h=h, k=k, a=a, θ_init=np.pi/4, T=6000, output_kwargs=output_kwargs, verbose=1, dim=3)

@@ -10,7 +10,7 @@ h = 14_857_341
 
 # Output parameters
 orbit_plot_title  = "Elliptical orbit of Earth in spherical coordinates"
-orbit_pdf_name    = "o_earth_ellipse.png"
+orbit_pdf_name    = "o_earth_ellipse.pdf"
 orbit_mp4_name    = "o_earth_ellipse.mp4"
 velocity_pdf_name = "v_earth_ellipse.pdf"
 plot_orbit        = True

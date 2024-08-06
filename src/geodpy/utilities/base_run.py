@@ -1,6 +1,6 @@
-from .geodesics import Geodesics
-from .body import Body
-from .coordinates import Coordinates
+from ..geodesics import Geodesics
+from ..body import Body
+from ..coordinates import Coordinates
 
 from sympy import *
 import matplotlib.patches as patches
@@ -9,7 +9,8 @@ import matplotlib.patches as patches
 #τ,t,r,a,b,c,θ,φ,η,ψ,x,y 
 
 ### basic function ###
-# The examples folder of the project uses this function to execute all its tests. This is in order to unify the similar logic/algorithm behind all tests.
+# The examples folder of the project uses this function to execute all its examples.
+# This is in order to unify the similar logic/algorithm behind all tests.
 def basic(
     coordinates:   Coordinates,
     g_mk:          Matrix,

@@ -8,10 +8,10 @@ h = hcirc(rs,ro)
 h -= 0.108082
 
 output_kwargs = {
-    "orbit_plot_title" : "Trajectory of a star orbiting a blackhole",
-    "orbit_pdf_name"   : "o_schwarzschild.pdf",
-    "orbit_mp4_name"   : "o_schwarzschild.mp4",
-    "velocity_pdf_name": "v_schwarzschild.pdf",
+    "orbit_plot_title" : "Star crashing into a blackhole",
+    "orbit_pdf_name"   : "o_lemaitre.pdf",
+    "orbit_mp4_name"   : "o_lemaitre.mp4",
+    "velocity_pdf_name": "v_lemaitre.pdf",
     "plot_orbit"       : True,
     "animate"          : True,
     "plot_velocity"    : False,

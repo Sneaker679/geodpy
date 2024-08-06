@@ -1,4 +1,5 @@
-from geodpy import Geodesics, Body, basic
+from geodpy import Geodesics, Body
+from geodpy.utilities import basic
 from geodpy.plotters import PolarPlot, CartesianPlot3D
 from geodpy.coordinates import OblongEllipsoid
 
@@ -140,7 +141,7 @@ def kerr(rs: float, ro: float, h: float, k: float, a: float, θ_init: float = np
         x = np.sqrt(r_ext_oblong*r_ext_oblong + a*a) * np.sin(θ) * np.cos(φ)
         y = np.sqrt(r_ext_oblong*r_ext_oblong + a*a) * np.sin(θ) * np.sin(φ)
         z = r_ext_oblong * np.cos(θ)
-        plotter.add_custom_surface(x, y, z)
+        plotter.add_custom_surface(x, y, z, facecolor='k')
 
     # Create outputs directory if doesn't exist.
     if not os.path.exists("outputs"):

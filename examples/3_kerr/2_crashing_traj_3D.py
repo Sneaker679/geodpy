@@ -11,7 +11,7 @@ k, h = circ(rs, ro, a, σ)
 h += 0.2
 
 output_kwargs = {
-    "orbit_plot_title" : "Trajectory of a star orbiting a rotating blackhole",
+    "orbit_plot_title" : "Trajectory of a star falling into a rotating blackhole",
     "orbit_pdf_name"   : "o_kerr.pdf",
     "orbit_mp4_name"   : "o_kerr.mp4",
     "velocity_pdf_name": "v_kerr.pdf",

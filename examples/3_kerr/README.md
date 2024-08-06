@@ -25,4 +25,5 @@ This folder contains 4 examples:
 - `1_crashing_traj_2D.py` : A body plunges into a rotating blackhole. As it approaches, its trajectory abruptly changes direction and starts making circles in the same direction as the rotation of the blackhole.
 - `2_crashing_traj_3D.py` : A body plunges into a rotating blackhole. As it approaches, its trajectory abruptly changes direction and also aligns itself with the equator of the blackhole.
 - `3_crashing_top_3D.py` : A body is dropped near the axis of rotation of the blackhole. When close to the event horizon, the body very rapidly realigns itself with the equator until it stabilizes.
-- `4_orbit_traj.py` : A body is orbitting the rotating blackhole in a near circular orbit.
+- `4_orbit_traj_2D.py` : A body is orbitting the rotating blackhole in a near circular orbit.
+- `5_orbit_traj_3D.py` : A body is orbitting the rotating blackhole while oscillating around the equatorial plane.

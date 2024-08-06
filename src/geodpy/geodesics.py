@@ -1,8 +1,8 @@
-from sympy import *
-import numpy as np
-
 from .to_lambda import vector_to_lambda
 from .coordinates import Coordinates
+
+from sympy import *
+import numpy as np
 
 ### Geodesic class ###
 # Class that acts as a variables container for all geodesics.

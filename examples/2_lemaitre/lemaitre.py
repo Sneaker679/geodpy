@@ -1,4 +1,5 @@
-from geodpy import Geodesics, Body, basic
+from geodpy import Geodesics, Body
+from geodpy.utilities import basic
 from geodpy.plotters import PolarPlot
 from geodpy.coordinates import Lemaitre
 
