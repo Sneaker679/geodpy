@@ -1,0 +1,38 @@
+# pyproject.toml
+
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geodpy"
+version = "1.0.0"
+description = "Computes space-time geodesics given an arbitrary metric and initial conditions."
+readme = "README.md"
+authors = [{ name = "Benjamin Gauthier", email = "benjamin.gauthier@hotmail.ca" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.12",
+	"Programming Language :: Python :: 3",
+	"Development Status :: 5 - Production/Stable",
+	"Environment :: Console",
+	"Intended Audience :: Science/Research",
+	"Operating System :: POSIX :: Linux",
+	"Topic :: Scientific/Engineering :: Mathematics",
+	"Topic :: Scientific/Engineering :: Physics",
+	"Topic :: Scientific/Engineering :: Astronomy"
+]
+keywords = ["general relativity", "geodesics", "geodesic", "gr", "astrophysics", "astronomy", "physics", "riemann", "riemann geometry", "geometry", "metric", "space-time", "spacetime"]
+dependencies = [
+    "numpy >= 2.0.1",
+    "scipy >= 1.14.0",
+    "sympy >= 1.13.1",
+	"matplotlib >= 3.9.1.post1",
+	"PyQt6 >= 6.7.1"
+]
+requires-python = ">=3.12"
+
+[project.urls]
+Homepage = "https://github.com/Sneaker679/geodpy/tree/main"

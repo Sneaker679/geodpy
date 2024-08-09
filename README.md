@@ -18,16 +18,18 @@ You can install these dependencies using:
 pip install matplotlib numpy scipy sympy
 ```
 
+Make sure these modules are correctly installed. Matplotlib in particular might require the installation of PyQt5 or PyQt6 depending on your system.
+
 ## Installation
-Clone the repository and go to the main folder `geodpy_lib`. You can use these commands:
+Clone the repository and go to the main folder `geodpy`. You can use these commands:
 ```bash
-git clone https://github.com/Sneaker679/geodpy_lib
-cd geodpy_lib
+git clone https://github.com/Sneaker679/geodpy
+cd geodpy
 ```
 
-In order to be able to import the classes and functions of this library, you will need to add the `geodpy_lib/src/geodpy` folder to your PYTHON PATH. Move to this folder using 
+In order to be able to import the classes and functions of this library, you will need to add the `./src` folder to your PYTHON PATH. Move to this folder using 
 ```bash
-cd src/geodpy
+cd src
 ```
 and run the following command to add it to your path.
 ```bash
@@ -45,7 +47,7 @@ echo 'export PYTHONPATH="$HOME'${PWD/#$HOME/}':$PYTHONPATH"' >> $HOME/.zshrc
 ## Basic Usage -> Using the examples
 
 ### Example with the Schwarzschild metric
-In the `geodpy_lib/examples/1_schwarzschild` folder, run any of the python files except for `schwarzschild.py` (since it acts as a module for the other files). For instance, you could run:
+In the `./examples/1_schwarzschild` folder, run any of the python files except for `schwarzschild.py` (since it acts as a module for the other files). For instance, you could run:
 ```bash
 python3 2_crashing_traj.py
 ```
@@ -59,7 +61,7 @@ In the `examples` folder are many examples that simulate geodesics with varied m
 The README inside each example folders specifies the meaning of the constants and quantities used.
 
 ## Advanced Usage
-For more advance usages, refer to `geodpy_lib/docs/1_HowTo_trajectories.md`, `geodpy_lib/docs/2_HowTo_coordinates.md` and `geodpy_lib/docs/3_HowTo_plotters.md`
+For more advance usages, refer to `./docs/1_HowTo_trajectories.md`, `./docs/2_HowTo_coordinates.md` and `./docs/3_HowTo_plotters.md`.
 
 ## Interface
-If you wish to see a more detailed overview of all the classes and functions at your disposition, be sure to checkout the `geodpy_lib/docs/class_documentation/`. There are many Markdown files there explaining how all the classes and functions work. The REAMDEs in this folder also specify how you can import them.
+If you wish to see a more detailed overview of all the classes and functions at your disposition, be sure to checkout the `./docs/class_documentation/`. There are many Markdown files there explaining how all the classes and functions work. The REAMDEs in this folder also specify how you can import them.
