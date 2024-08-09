@@ -3,9 +3,12 @@
 - `Geodesics`, `Body`.
 
 `geodpy` functions:
-- `expr_to_lambda`, `vector_to_lambda`, `basic`.
+- `expr_to_lambda`, `vector_to_lambda`.
 
-Importable via: `from geodpy import *`.
+`geodpy.utilities` functions:
+- `basic`.
+
+Importable via: `from geodpy import *` and `from geodpy.utilities import *`.
 
 ## Description
 This is the most important and first of the *HowTo*s as we tackle the main purpose of this library - calculating trajectories of bodies in a given arbitrary metric. The 2 core objects are `Geodesics` and `Body`, which handle respectively the calculation of the symbolic geodesics and the calculation of the trajectories given the geodesics. All the results are stored in the attributes of these objects, such as all the points of a trajectory.
@@ -118,6 +121,7 @@ The function `basic()` basically condenses most of the previous step into one fu
 The `basic()` function returns a body with its trajectory already calculated. You can then plot it using the aforementionned steps. To use it, initialize the necessary parameters:
 ```python
 from geodpy.coordinates import OblongEllipsoid
+from geodpy.utilities import basic
 from sympy import *
 
 rs = 1
@@ -156,7 +160,7 @@ solver_kwargs = {
 verbose = 1    # or 2
 
 # RUN
-body = basic(cooridnates, g_mk, initial_pos, initial_vel, solver_kwargs, verbose)
+body = basic(coordinates, g_mk, initial_pos, initial_vel, solver_kwargs, verbose)
 ```
 
 As you can see, the function takes 6 parameters, 2 of which are optionnal as they have internal default values if left untouched. In order, it needs: the coordinate system, the metric, the initial values, the solver arguments and the amount of printing (verbose).

@@ -25,7 +25,11 @@ git clone https://github.com/Sneaker679/geodpy_lib
 cd geodpy_lib
 ```
 
-In order to be able to import the classes and functions of this library, you will need to add the `geodpy_lib` folder to your PYTHON PATH. If you are already located in this folder, you can run the following command.
+In order to be able to import the classes and functions of this library, you will need to add the `geodpy_lib/src/geodpy` folder to your PYTHON PATH. Move to this folder using 
+```bash
+cd src/geodpy
+```
+and run the following command to add it to your path.
 ```bash
 export PYTHONPATH="$(pwd):$PYTHONPATH"
 ```
