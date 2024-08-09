@@ -2,4 +2,4 @@
 *.pdf
 **/__pycache__
 venv
-geodpy/tags
+src/geodpy/tags
