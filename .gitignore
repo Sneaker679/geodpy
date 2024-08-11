@@ -4,3 +4,4 @@
 venv
 src/geodpy/tags
 *.egg-info
+dist

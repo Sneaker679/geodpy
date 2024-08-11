@@ -65,3 +65,6 @@ For more advance usages, refer to `./docs/1_HowTo_trajectories.md`, `./docs/2_Ho
 
 ## Interface
 If you wish to see a more detailed overview of all the classes and functions at your disposition, be sure to checkout the `./docs/class_documentation/`. There are many Markdown files there explaining how all the classes and functions work. The REAMDEs in this folder also specify how you can import them.
+
+## Numerical errors
+Since this code uses a generalized approach to solving geodesics, it is prone to significant numerical errors, especially for metrics with complicated algebraic geodesics expressions. For instance, the `3_kerr` example has a lot of numerical errors because the metric is not diagonal and its geodesics are very complex. Be mindful of this when you want accurate results.

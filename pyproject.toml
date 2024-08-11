@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "geodpy"
-version = "1.0.0"
+version = "1.0.1"
 description = "Computes space-time geodesics given an arbitrary metric and initial conditions."
 readme = "README.md"
 authors = [{ name = "Benjamin Gauthier", email = "benjamin.gauthier@hotmail.ca" }]
@@ -30,7 +30,6 @@ dependencies = [
     "scipy >= 1.14.0",
     "sympy >= 1.13.1",
 	"matplotlib >= 3.9.1.post1",
-	"PyQt6 >= 6.7.1"
 ]
 requires-python = ">=3.12"
 
