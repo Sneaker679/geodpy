@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "geodpy"
-version = "1.0.1"
+version = "1.0.2"
 description = "Computes space-time geodesics given an arbitrary metric and initial conditions."
 readme = "README.md"
 authors = [{ name = "Benjamin Gauthier", email = "benjamin.gauthier@hotmail.ca" }]

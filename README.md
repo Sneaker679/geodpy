@@ -7,39 +7,53 @@ This code aims to simulate geodesics given an arbitrary space-time metric.
 - Calculate the norm of the velocity of a body.
 - Plot the trajectories on matplotlib in both 2D and 3D.
 
-## Requirements
-- matplotlib
-- sympy
-- scipy
-- numpy
+## Installation using `pip`
+To install the package using pip, first create a virtual python environment in your working directory and activate the environment:
+```bash
+python -m venv venv
+source venv/bin/activate
+```
 
-You can install these dependencies using:
+Then, simply install the package using:
+```bash
+pip install geodpy
+```
+
+Depending on your system, you might also need to install manually PyQt5 or PyQt6, which are needed by `matplotlib` to render the plots dynamically. **Also note that by using this method of installation, you do not get access to the hardcoded examples and the documentation**. Both of these are currently only available through the GitHub repository. The `pip` method of installation only grants you access to all the classes and functions of the library.
+
+
+## Installation using `git`
+To install the package from git, you will need to download these dependencies:
+
+- `matplotlib`
+- `sympy`
+- `scipy`
+- `numpy`
+
+Make sure these modules are correctly installed. More specifically, the package `matplotlib` might require the installation of PyQt5 or PyQt6 depending on your system. You can install these dependencies using:
 ```bash
 pip install matplotlib numpy scipy sympy
 ```
 
-Make sure these modules are correctly installed. Matplotlib in particular might require the installation of PyQt5 or PyQt6 depending on your system.
-
-## Installation
 Clone the repository and go to the main folder `geodpy`. You can use these commands:
 ```bash
 git clone https://github.com/Sneaker679/geodpy
 cd geodpy
 ```
 
-In order to be able to import the classes and functions of this library, you will need to add the `./src` folder to your PYTHON PATH. Move to this folder using 
+In order to be able to import the classes and functions of this library, you will need to add the `./src` folder to your PYTHON PATH. Move to this folder using:
 ```bash
 cd src
 ```
-and run the following command to add it to your path.
+Then, run the following command to add it to your PYTHON PATH:
 ```bash
 export PYTHONPATH="$(pwd):$PYTHONPATH"
 ```
-To add the folder permanently to your PYTHON PATH, run this command instead.
+To add the folder permanently to your PYTHON PATH, run this command instead:
 ```bash
 echo 'export PYTHONPATH="$HOME'${PWD/#$HOME/}':$PYTHONPATH"' >> $HOME/.bashrc
 ```
-or, for zsh terminals, run this.
+Or, for zsh terminals, run this:
 ```bash
 echo 'export PYTHONPATH="$HOME'${PWD/#$HOME/}':$PYTHONPATH"' >> $HOME/.zshrc
 ```
