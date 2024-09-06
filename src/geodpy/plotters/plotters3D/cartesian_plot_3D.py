@@ -16,7 +16,7 @@ class CartesianPlot3D(BodyPlotter3D, BodyPlotter):
 
     def plot(self, title: str) -> None:
         self.fig, self.ax = plt.subplots(subplot_kw={"projection":"3d", "computed_zorder": False})
-        border = np.max(self.body.pos[1:3]) * 1.2
+        border = np.max(np.abs(self.body.pos[1:3])) * 1.2
         self.ax.plot(self.body.pos[1], self.body.pos[2], self.body.pos[3])
         self.ax.set_xlim(-border, border)
         self.ax.set_ylim(-border, border)
@@ -31,7 +31,7 @@ class CartesianPlot3D(BodyPlotter3D, BodyPlotter):
     # Animation plotting methods
     def animate(self, frame_interval: int = 20) -> None:
         self.fig_ani, self.ax_ani = plt.subplots(subplot_kw={"projection":"3d", "computed_zorder": False})
-        border = np.max(self.body.pos[1:4]) * 1.2
+        border = np.max(np.abs(self.body.pos[1:4])) * 1.2
         line = self.ax_ani.plot(self.body.pos[1], self.body.pos[2], self.body.pos[3])[0]
         self.ax_ani.set_xlim(-border, border)
         self.ax_ani.set_ylim(-border, border)

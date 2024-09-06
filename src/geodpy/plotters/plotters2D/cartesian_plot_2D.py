@@ -17,7 +17,7 @@ class CartesianPlot2D(BodyPlotter2D, BodyPlotter):
 
     def plot(self, title: str) -> None:
         self.fig, self.ax = plt.subplots()
-        border = np.max(self.body.pos[1:3]) * 1.2
+        border = np.max(np.abs(self.body.pos[1:3])) * 1.2
         self.ax.plot(self.body.pos[1], self.body.pos[2])
         self.ax.set_xlim(-border, border)
         self.ax.set_ylim(-border, border)
@@ -28,7 +28,7 @@ class CartesianPlot2D(BodyPlotter2D, BodyPlotter):
 
     def animate(self, frame_interval: int = 20) -> None:
         self.fig_ani, self.ax_ani = plt.subplots(figsize=(16, 9), dpi=1920/16)
-        border = np.max(self.body.pos[1:4]) * 1.2
+        border = np.max(np.abs(self.body.pos[1:4])) * 1.2
         line = self.ax_ani.plot(self.body.pos[1], self.body.pos[2])[0]
         self.ax_ani.set_xlim(-border, border)
         self.ax_ani.set_ylim(-border, border)
